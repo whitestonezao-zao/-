@@ -149,7 +149,16 @@ function queueVolumeChanges(){
   setTimeout(()=>{if(announceSource===source)adjustVolume()},wait);
 }
 function endBell(){bellPlaying=false;starting=false;stopPending=false;sounds.bell.loop=false;$('bellLamp').classList.remove('lit')}
-$('bellButton').addEventListener('click',()=>{if(starting)return;if(bellPlaying){if(activeMode==='tachikawa'){if(!stopPending){stopPending=true;sounds.bell.loop=false;$('bellLamp').classList.remove('lit');}return;}sounds.bell.pause();sounds.bell.currentTime=0;endBell();return}if(!sounds.bell.src){alert('先に設定から発車メロディを登録してください。');return}starting=true;bellPlaying=true;stopPending=false;activeMode=getMode();$('bellLamp').classList.add('lit');sounds.bell.loop=true;sounds.bell.currentTime=0;
+// iOS Safariで停止位置の音が次回開始時に一瞬出ることがあるため、
+// 再生開始時にメディア要素のデコード状態を初期化する。
+function resetBellForReplay(){
+  const bell=sounds.bell;
+  bell.pause();
+  bell.loop=false;
+  bell.load();
+  try{bell.currentTime=0}catch(e){}
+}
+$('bellButton').addEventListener('click',()=>{if(starting)return;if(bellPlaying){if(activeMode==='tachikawa'){if(!stopPending){stopPending=true;sounds.bell.loop=false;$('bellLamp').classList.remove('lit');}return;}sounds.bell.pause();try{sounds.bell.currentTime=0}catch(e){}endBell();return}if(!sounds.bell.src){alert('先に設定から発車メロディを登録してください。');return}starting=true;bellPlaying=true;stopPending=false;activeMode=getMode();$('bellLamp').classList.add('lit');resetBellForReplay();sounds.bell.loop=true;
 // 再生操作の同期処理中に両方のplay()を呼び、モバイルの自動再生制限に対応する。
 const ctx=ensureAudioContext();if(ctx)ctx.resume().catch(()=>{});const p=sounds.bell.play();scheduleAnnouncement();adjustVolume();queueVolumeChanges();Promise.resolve(p).then(()=>{starting=false}).catch(()=>{sounds.bell.pause();endBell();alert('メロディを再生できませんでした。音声ファイルを確認してください。')})});
 sounds.bell.addEventListener('ended',endBell);sounds.announce.addEventListener('play',adjustVolume);sounds.announce.addEventListener('pause',adjustVolume);sounds.announce.addEventListener('ended',adjustVolume);sounds.announce.addEventListener('error',adjustVolume);
