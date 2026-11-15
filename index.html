@@ -61,6 +61,10 @@ applyLayout();
 const $=id=>document.getElementById(id);const sounds={bell:new Audio(),announce:new Audio(),door:new Audio()};const urls={};let bellPlaying=false,doorHeld=false,starting=false,stopPending=false,activeMode="normal";let announcementTimer=null,announcementGeneration=0;
 let audioContext=null,bellGain=null,announceBuffer=null,announceSource=null,announceStartAt=0,announceEndAt=0;
 let announceLoadVersion=0;
+let fallbackAnnouncementActive=false;
+let fallbackAnnouncementPending=false;
+let scheduledDuckSource=null;
+
 function ensureAudioContext(){
   if(audioContext)return audioContext;
   const AudioContextClass=window.AudioContext||window.webkitAudioContext;
@@ -88,31 +92,65 @@ function clearScheduledAnnouncement(){
   ++announcementGeneration;
   if(announceSource){try{announceSource.stop()}catch(e){}announceSource.disconnect();announceSource=null}
   announceStartAt=0;announceEndAt=0;
+  fallbackAnnouncementPending=false;
+  cancelDuckAutomation();
 }
 
 function db(){return new Promise((resolve,reject)=>{const r=indexedDB.open('departure-bell-v3',1);r.onupgradeneeded=()=>r.result.createObjectStore('audio');r.onsuccess=()=>resolve(r.result);r.onerror=()=>reject(r.error)})}
 async function storeFile(key,file){const d=await db();return new Promise((resolve,reject)=>{const t=d.transaction('audio','readwrite');t.objectStore('audio').put({blob:file,name:file.name},key);t.oncomplete=resolve;t.onerror=()=>reject(t.error)})}
 async function deleteFile(key){const d=await db();return new Promise((resolve,reject)=>{const t=d.transaction('audio','readwrite');t.objectStore('audio').delete(key);t.oncomplete=resolve;t.onerror=()=>reject(t.error)})}
 async function readFile(key){const d=await db();return new Promise((resolve,reject)=>{const r=d.transaction('audio','readonly').objectStore('audio').get(key);r.onsuccess=()=>resolve(r.result);r.onerror=()=>reject(r.error)})}
-function setSource(key,blob,name){sounds[key].pause();if(urls[key])URL.revokeObjectURL(urls[key]);urls[key]=URL.createObjectURL(blob);sounds[key].src=urls[key];sounds[key].load();$(key+'Status').textContent='登録済み：'+name;if(key==='bell')endBell();if(key==='door')stopDoor();if(key==='announce'){clearScheduledAnnouncement();prepareAnnouncement(blob)}}
-$('clearAnnounce').addEventListener('click',async()=>{try{await deleteFile('announce');clearScheduledAnnouncement();++announceLoadVersion;announceBuffer=null;sounds.announce.pause();sounds.announce.removeAttribute('src');sounds.announce.load();if(urls.announce){URL.revokeObjectURL(urls.announce);delete urls.announce} $('announceFile').value='';$('announceStatus').textContent='未登録（発車放送なし）';adjustVolume()}catch(e){alert('発車放送の解除に失敗しました。もう一度お試しください。')}});
+function setSource(key,blob,name){sounds[key].pause();if(urls[key])URL.revokeObjectURL(urls[key]);urls[key]=URL.createObjectURL(blob);sounds[key].src=urls[key];sounds[key].load();$(key+'Status').textContent='登録済み：'+name;if(key==='bell')endBell();if(key==='door')stopDoor();if(key==='announce'){clearScheduledAnnouncement();fallbackAnnouncementActive=false;prepareAnnouncement(blob)}}
+$('clearAnnounce').addEventListener('click',async()=>{try{await deleteFile('announce');clearScheduledAnnouncement();fallbackAnnouncementActive=false;++announceLoadVersion;announceBuffer=null;sounds.announce.pause();sounds.announce.removeAttribute('src');sounds.announce.load();if(urls.announce){URL.revokeObjectURL(urls.announce);delete urls.announce} $('announceFile').value='';$('announceStatus').textContent='未登録（発車放送なし）';adjustVolume()}catch(e){alert('発車放送の解除に失敗しました。もう一度お試しください。')}});
 for(const key of ['bell','announce','door']){$(key+'File').addEventListener('change',async e=>{const file=e.target.files?.[0];if(!file)return;try{await storeFile(key,file);setSource(key,file,file.name)}catch(err){alert('音声を保存できませんでした。容量などを確認してください。')}e.target.value=''})}
 (async()=>{for(const key of ['bell','announce','door']){try{const f=await readFile(key);if(f)setSource(key,f.blob,f.name)}catch(e){}}})();
 function getMode(){return $('mode').value}function getDuck(){let v=Number($('duck').value);return Number.isFinite(v)?Math.min(100,Math.max(0,v))/100:0.3}
 function getDelay(){const v=Number($('announceDelay').value);return Number.isFinite(v)?Math.min(3600,Math.max(0,v)):0}
+// Web Audio の時刻で減音を予約する。iPhoneのJSタイマー遅延に依存しない。
+function cancelDuckAutomation(){
+  if(!bellGain||!audioContext)return;
+  const param=bellGain.gain;
+  param.cancelScheduledValues(audioContext.currentTime);
+  param.setValueAtTime(isAnnouncementActive()?getDuck():1,audioContext.currentTime);
+  scheduledDuckSource=null;
+}
+function isAnnouncementActive(){
+  const web=!!(audioContext&&announceSource&&audioContext.currentTime>=announceStartAt&&audioContext.currentTime<announceEndAt);
+  const html=fallbackAnnouncementActive&&!sounds.announce.paused&&!sounds.announce.ended;
+  return web||html;
+}
+function isAnnouncementPending(){
+  const web=!!(audioContext&&announceSource&&audioContext.currentTime<announceStartAt);
+  return web||fallbackAnnouncementPending;
+}
+function scheduleDuckForWeb(source){
+  if(!audioContext||!bellGain)return;
+  const param=bellGain.gain;
+  const now=audioContext.currentTime;
+  param.cancelScheduledValues(now);
+  param.setValueAtTime(now>=announceStartAt?getDuck():1,now);
+  if(announceStartAt>now)param.setValueAtTime(getDuck(),announceStartAt);
+  param.setValueAtTime(1,Math.max(now,announceEndAt));
+  scheduledDuckSource=source;
+}
 function playAnnouncement(){
+  fallbackAnnouncementPending=false;
   if(!sounds.announce.src||!sounds.announce.paused)return;
   try{sounds.announce.currentTime=0}catch(e){}
-  sounds.announce.play().then(adjustVolume).catch(adjustVolume);
+  const p=sounds.announce.play();
+  Promise.resolve(p).then(()=>{fallbackAnnouncementActive=true;adjustVolume()}).catch(()=>{fallbackAnnouncementActive=false;adjustVolume()});
 }
 function scheduleAnnouncement(){
+  // 放送中は音源を維持し、メロディ再開時にも放送を重ねない。
+  if(isAnnouncementActive()){
+    adjustVolume();
+    return;
+  }
   clearScheduledAnnouncement();
   if(!sounds.announce.src)return;
   const delay=getDelay();
   const ctx=ensureAudioContext();
   if(ctx&&announceBuffer){
-    // 青ボタンのタップ中に AudioContext を有効化し、音源の開始時刻を直接予約する。
-    // setTimeout 内で play() しないため、iPhone の自動再生制限を回避しやすい。
     ctx.resume().catch(e=>console.warn('AudioContextを開始できません',e));
     const source=ctx.createBufferSource();
     source.buffer=announceBuffer;
@@ -125,28 +163,32 @@ function scheduleAnnouncement(){
       announceSource=null;announceStartAt=0;announceEndAt=0;
       adjustVolume();
     };
+    scheduleDuckForWeb(source);
     source.start(announceStartAt);
-    adjustVolume();
     return;
   }
-  // Web Audio 非対応やデコード失敗時のフォールバック（遅延再生は端末により制限あり）。
+  // デコード未完了時のフォールバック。放送中は維持する。
   const generation=announcementGeneration;
   if(delay===0){playAnnouncement();return}
-  announcementTimer=setTimeout(()=>{announcementTimer=null;if(generation===announcementGeneration)playAnnouncement()},delay*1000);
+  fallbackAnnouncementPending=true;
+  announcementTimer=setTimeout(()=>{
+    announcementTimer=null;
+    if(generation===announcementGeneration)playAnnouncement();
+  },delay*1000);
 }
 function adjustVolume(){
-  const webAnnouncementActive=!!(audioContext&&announceSource&&audioContext.currentTime>=announceStartAt&&audioContext.currentTime<announceEndAt);
-  const htmlAnnouncementActive=!sounds.announce.paused&&!sounds.announce.ended;
-  const target=(webAnnouncementActive||htmlAnnouncementActive)?getDuck():1;
-  if(bellGain)bellGain.gain.value=target;
-  else sounds.bell.volume=target;
-}
-// 放送開始時にメロディを減音。setTimeout は音声再生に使わず、音量変更だけに使う。
-function queueVolumeChanges(){
-  if(!audioContext||!announceSource)return;
-  const source=announceSource;
-  const wait=Math.max(0,(announceStartAt-audioContext.currentTime)*1000);
-  setTimeout(()=>{if(announceSource===source)adjustVolume()},wait);
+  const target=isAnnouncementActive()?getDuck():1;
+  if(bellGain){
+    const now=audioContext.currentTime;
+    if(announceSource){
+      // Web Audioで予約した減音は上書きしない。
+      if(scheduledDuckSource!==announceSource)scheduleDuckForWeb(announceSource);
+    }else{
+      bellGain.gain.cancelScheduledValues(now);
+      bellGain.gain.setValueAtTime(target,now);
+      scheduledDuckSource=null;
+    }
+  }else sounds.bell.volume=target;
 }
 function endBell(){bellPlaying=false;starting=false;stopPending=false;sounds.bell.loop=false;$('bellLamp').classList.remove('lit')}
 // iOS Safariで停止位置の音が次回開始時に一瞬出ることがあるため、
@@ -160,9 +202,9 @@ function resetBellForReplay(){
 }
 $('bellButton').addEventListener('click',()=>{if(starting)return;if(bellPlaying){if(activeMode==='tachikawa'){if(!stopPending){stopPending=true;sounds.bell.loop=false;$('bellLamp').classList.remove('lit');}return;}sounds.bell.pause();try{sounds.bell.currentTime=0}catch(e){}endBell();return}if(!sounds.bell.src){alert('先に設定から発車メロディを登録してください。');return}starting=true;bellPlaying=true;stopPending=false;activeMode=getMode();$('bellLamp').classList.add('lit');resetBellForReplay();sounds.bell.loop=true;
 // 再生操作の同期処理中に両方のplay()を呼び、モバイルの自動再生制限に対応する。
-const ctx=ensureAudioContext();if(ctx)ctx.resume().catch(()=>{});const p=sounds.bell.play();scheduleAnnouncement();adjustVolume();queueVolumeChanges();Promise.resolve(p).then(()=>{starting=false}).catch(()=>{sounds.bell.pause();endBell();alert('メロディを再生できませんでした。音声ファイルを確認してください。')})});
-sounds.bell.addEventListener('ended',endBell);sounds.announce.addEventListener('play',adjustVolume);sounds.announce.addEventListener('pause',adjustVolume);sounds.announce.addEventListener('ended',adjustVolume);sounds.announce.addEventListener('error',adjustVolume);
-$('announceDelay').addEventListener('change',()=>{const v=getDelay();$('announceDelay').value=String(v);localStorage.setItem('bell-announce-delay-v7',String(v))});$('duck').addEventListener('input',()=>{const v=Number($('duck').value);if(Number.isFinite(v)&&v>=0&&v<=100){localStorage.setItem('bell-duck-v3',String(v));adjustVolume()}});$('mode').addEventListener('change',()=>{localStorage.setItem('bell-mode-v3',getMode());/* 再生中のモードは次回の開始から反映 */});
+const ctx=ensureAudioContext();if(ctx)ctx.resume().catch(()=>{});const p=sounds.bell.play();scheduleAnnouncement();adjustVolume();Promise.resolve(p).then(()=>{starting=false}).catch(()=>{sounds.bell.pause();endBell();alert('メロディを再生できませんでした。音声ファイルを確認してください。')})});
+sounds.bell.addEventListener('ended',endBell);sounds.announce.addEventListener('play',()=>{fallbackAnnouncementActive=true;adjustVolume()});sounds.announce.addEventListener('pause',()=>{fallbackAnnouncementActive=false;adjustVolume()});sounds.announce.addEventListener('ended',()=>{fallbackAnnouncementActive=false;adjustVolume()});sounds.announce.addEventListener('error',()=>{fallbackAnnouncementActive=false;adjustVolume()});
+$('announceDelay').addEventListener('change',()=>{const v=getDelay();$('announceDelay').value=String(v);localStorage.setItem('bell-announce-delay-v7',String(v))});$('duck').addEventListener('input',()=>{const v=Number($('duck').value);if(Number.isFinite(v)&&v>=0&&v<=100){localStorage.setItem('bell-duck-v3',String(v));if(announceSource)scheduleDuckForWeb(announceSource);else adjustVolume()}});$('mode').addEventListener('change',()=>{localStorage.setItem('bell-mode-v3',getMode());/* 再生中のモードは次回の開始から反映 */});
 const savedDelay=localStorage.getItem('bell-announce-delay-v7');if(savedDelay!==null&&Number.isFinite(Number(savedDelay))&&Number(savedDelay)>=0&&Number(savedDelay)<=3600)$('announceDelay').value=savedDelay;const savedMode=localStorage.getItem('bell-mode-v3');if(['normal','tachikawa'].includes(savedMode))$('mode').value=savedMode;const savedDuck=localStorage.getItem('bell-duck-v3');if(savedDuck!==null&&Number(savedDuck)>=0&&Number(savedDuck)<=100)$('duck').value=savedDuck;
 const door=$('doorButton');function stopDoor(){doorHeld=false;sounds.door.pause();if(sounds.door.src)try{sounds.door.currentTime=0}catch(e){}$('doorLamp').classList.remove('lit')}
 door.addEventListener('pointerdown',e=>{e.preventDefault();if(doorHeld)return;if(!sounds.door.src){alert('先に設定から乗降終了合図を登録してください。');return}doorHeld=true;$('doorLamp').classList.add('lit');sounds.door.currentTime=0;door.setPointerCapture?.(e.pointerId);sounds.door.play().catch(()=>stopDoor())});for(const event of ['pointerup','pointercancel','lostpointercapture'])door.addEventListener(event,stopDoor);sounds.door.addEventListener('ended',stopDoor);window.addEventListener('blur',stopDoor);document.addEventListener('visibilitychange',()=>{if(document.hidden)stopDoor()});
