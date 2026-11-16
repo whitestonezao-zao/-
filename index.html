@@ -58,7 +58,7 @@ body.layout-mobile .ring{width:clamp(130px,38vw,190px);height:clamp(130px,38vw,1
 .version-label{margin:24px 0 4px;text-align:center;color:#999;font-size:12px;letter-spacing:.06em}
 </style></head><body>
 <button class="settings-button" id="gear" aria-label="設定">⚙</button><main class="cabinet"><div class="section"></div><div class="section"><div class="controls"><div class="indicators"><div class="rectangle"></div><div class="lamp" id="bellLamp"></div></div><div class="ring"><button class="bigbutton blue" id="bellButton" aria-label="発車メロディ"></button></div></div></div><div class="section"><div class="controls"><div class="indicators"><div class="rectangle"></div><div class="lamp" id="doorLamp"></div></div><div class="ring"><button class="bigbutton red" id="doorButton" aria-label="乗降終了合図"></button></div></div></div><div class="section"></div><div class="section"></div></main>
-<section class="dialog" id="settings"><div class="header"><h2>音声・モード設定</h2><button class="close" id="close">閉じる</button></div><div class="setting"><label for="layoutMode">表示モード</label><select id="layoutMode"><option value="auto">自動（画面幅で切り替え）</option><option value="pc">PC・iPadモード</option><option value="mobile">モバイルモード</option></select><p class="help">自動では画面幅600px以下をモバイル表示にします。手動選択も可能です。</p></div><div class="setting"><label for="mode">発車メロディのモード</label><select id="mode"><option value="normal">通常（停止までループ）</option><option value="tachikawa">立川式（停止操作後、現在のコーラス終わりで停止）</option></select></div><div class="setting"><label for="bellFile">発車メロディ</label><input type="file" id="bellFile" accept="audio/*,.mp3,.wav,.m4a,.ogg"><label class="file-pick" for="bellFile">ファイルを選択</label><p class="status" id="bellStatus">未登録</p></div><div class="setting"><label for="announceFile">発車放送</label><input type="file" id="announceFile" accept="audio/*,.mp3,.wav,.m4a,.ogg"><label class="file-pick" for="announceFile">ファイルを選択</label><p class="status" id="announceStatus">未登録（発車放送なし）</p><button type="button" class="close" id="clearAnnounce">発車放送なしにする</button></div><div class="setting"><label for="announceDelay">発車放送開始秒数</label><input type="number" id="announceDelay" min="0" max="3600" step="0.1" value="0" inputmode="decimal"> 秒<p class="help">発車メロディ開始から何秒後に発車放送を流すか設定します。</p></div><div class="setting"><label for="duck">発車放送中のメロディ音量（%）</label><input type="number" id="duck" min="0" max="100" step="1" value="30" inputmode="numeric"> %<p class="help">0〜100の数字を入力。放送が終わると100%に戻ります。</p></div><div class="setting"><label for="doorFile">乗降終了合図</label><input type="file" id="doorFile" accept="audio/*,.mp3,.wav,.m4a,.ogg"><label class="file-pick" for="doorFile">ファイルを選択</label><p class="status" id="doorStatus">未登録</p></div><p class="hint">設定と音声ファイルはこのブラウザに保存します。別の端末には自動で引き継がれません。ブラウザの保存データを消すと登録が失われる場合があります。</p><p class="version-label" aria-label="アプリのバージョン">Ver.20</p></section>
+<section class="dialog" id="settings"><div class="header"><h2>音声・モード設定</h2><button class="close" id="close">閉じる</button></div><div class="setting"><label for="layoutMode">表示モード</label><select id="layoutMode"><option value="auto">自動（画面幅で切り替え）</option><option value="pc">PC・iPadモード</option><option value="mobile">モバイルモード</option></select><p class="help">自動では画面幅600px以下をモバイル表示にします。手動選択も可能です。</p></div><div class="setting"><label for="mode">発車メロディのモード</label><select id="mode"><option value="normal">通常（停止までループ）</option><option value="tachikawa">立川式（停止操作後、現在のコーラス終わりで停止）</option></select></div><div class="setting"><label for="bellFile">発車メロディ</label><input type="file" id="bellFile" accept="audio/*,.mp3,.wav,.m4a,.ogg"><label class="file-pick" for="bellFile">ファイルを選択</label><p class="status" id="bellStatus">未登録</p></div><div class="setting"><label for="announceFile">発車放送</label><input type="file" id="announceFile" accept="audio/*,.mp3,.wav,.m4a,.ogg"><label class="file-pick" for="announceFile">ファイルを選択</label><p class="status" id="announceStatus">未登録（発車放送なし）</p><button type="button" class="close" id="clearAnnounce">発車放送なしにする</button></div><div class="setting"><label for="announceDelay">発車放送開始秒数</label><input type="number" id="announceDelay" min="0" max="3600" step="0.1" value="0" inputmode="decimal"> 秒<p class="help">発車メロディ開始から何秒後に発車放送を流すか設定します。</p></div><div class="setting"><label for="duck">発車放送中のメロディ音量（%）</label><input type="number" id="duck" min="0" max="100" step="1" value="30" inputmode="numeric"> %<p class="help">0〜100の数字を入力。放送が終わると100%に戻ります。</p></div><div class="setting"><label for="doorFile">乗降終了合図</label><input type="file" id="doorFile" accept="audio/*,.mp3,.wav,.m4a,.ogg"><label class="file-pick" for="doorFile">ファイルを選択</label><p class="status" id="doorStatus">未登録</p></div><p class="hint">設定と音声ファイルはこのブラウザに保存します。別の端末には自動で引き継がれません。ブラウザの保存データを消すと登録が失われる場合があります。</p><p class="version-label" aria-label="アプリのバージョン">Ver.21</p></section>
 <script>
 (()=>{'use strict';
 const layoutSelect=document.getElementById('layoutMode');
@@ -72,6 +72,12 @@ const $=id=>document.getElementById(id);const sounds={bell:new Audio(),announce:
 let audioContext=null,bellGain=null,announceBuffer=null,announceSource=null,announceStartAt=0,announceEndAt=0;
 let announceLoadVersion=0;
 let bellBuffer=null,bellLoadVersion=0,bellBufferSource=null;
+// Decode on a separate offline context so the playback AudioContext is born only on a user gesture.
+function makeDecoder(){
+  const Offline=window.OfflineAudioContext||window.webkitOfflineAudioContext;
+  if(Offline){try{return new Offline(1,1,44100)}catch(e){console.warn('Offline decoder unavailable',e)}}
+  return ensureAudioContext();
+}
 async function prepareBellBuffer(blob){
   const version=++bellLoadVersion;
   bellBuffer=null;
@@ -122,7 +128,7 @@ function createUnlockSound(){
   view.setUint32(28,sampleRate*2,true);view.setUint16(32,2,true);
   view.setUint16(34,16,true);ascii(36,'data');view.setUint32(40,frames*2,true);
   const sound=new Audio(URL.createObjectURL(new Blob([buffer],{type:'audio/wav'})));
-  sound.preload='auto';sound.volume=1;
+  sound.preload='auto';sound.volume=1;sound.loop=true;
   return sound;
 }
 function unlockMediaSessionForGesture(){
@@ -268,7 +274,7 @@ function adjustVolume(){
     }
   }else sounds.bell.volume=target;
 }
-function endBell(){++bellStartGeneration;stopBellBuffer();bellPlaying=false;starting=false;stopPending=false;sounds.bell.loop=false;$('bellLamp').classList.remove('lit')}
+function endBell(){if(unlockSound)unlockSound.pause();++bellStartGeneration;stopBellBuffer();bellPlaying=false;starting=false;stopPending=false;sounds.bell.loop=false;$('bellLamp').classList.remove('lit')}
 // iOS Safariで停止位置の音が次回開始時に一瞬出ることがあるため、
 // 再生開始時にメディア要素のデコード状態を初期化する。
 function resetBellForReplay(){
@@ -297,35 +303,39 @@ $('bellButton').addEventListener('click',()=>{
   starting=true;bellPlaying=true;stopPending=false;activeMode=getMode();
   $('bellLamp').classList.add('lit');
   const ctx=unlockAudioForGesture();
-  if(activeMode==='normal'&&ctx&&bellBuffer){
-    // HTMLAudio.play()が成功してからWeb Audioを再開・開始する。
-    // 赤ボタンを押したときに鳴り始める挙動を青ボタン単独で再現する狙い。
-    const generation=++bellStartGeneration;
-    const buffer=bellBuffer;
-    sounds.bell.pause();
-    unlockMediaSessionForGesture().catch(e=>{
-      console.warn('無音HTMLAudioの起動に失敗（Web Audioを試行）',e);
-    }).then(async()=>{
-      if(generation!==bellStartGeneration||!bellPlaying)return;
-      try{if(ctx.state!=='running')await ctx.resume()}catch(e){console.warn('AudioContext resume失敗',e)}
-      if(generation!==bellStartGeneration||!bellPlaying)return;
-      try{
-        const source=ctx.createBufferSource();
-        source.buffer=buffer;
-        source.loop=true;
-        source.connect(bellGain);
-        bellBufferSource=source;
-        source.onended=()=>{if(bellBufferSource===source)endBell()};
-        source.start();
-        scheduleAnnouncement();adjustVolume();
-        starting=false;
-      }catch(e){
-        console.error('メロディ再生開始失敗',e);
-        endBell();alert('メロディを再生できませんでした。音声ファイルを確認してください。');
-      }
-    });
-    return;
-  }
+   if(activeMode==='normal'&&ctx&&bellBuffer){
+     // Ver.21: Keep silent HTMLAudio playing while the Web Audio melody is on.
+     // Crucially, start/resume the playback context and the source *in the same click gesture*.
+     // Waiting for a play() promise first loses the user activation on older iOS Safari.
+     const generation=++bellStartGeneration;
+     const buffer=bellBuffer;
+     sounds.bell.pause();
+     unlockMediaSessionForGesture().catch(e=>console.warn('無音音声の開始に失敗',e));
+     try{
+       const source=ctx.createBufferSource();
+       source.buffer=buffer;
+       source.loop=true;
+       source.connect(bellGain);
+       bellBufferSource=source;
+       source.onended=()=>{if(bellBufferSource===source)endBell()};
+       if(ctx.state!=='running')ctx.resume().catch(e=>console.warn('AudioContext resume失敗',e));
+       source.start(0);
+       scheduleAnnouncement();adjustVolume();
+       starting=false;
+       // If Safari takes time to activate audio, retry resume without restarting the melody.
+       // The source remains scheduled against the suspended context until it runs.
+       Promise.resolve().then(async()=>{
+         if(generation!==bellStartGeneration||!bellPlaying)return;
+         if(ctx.state!=='running'){
+           try{await ctx.resume()}catch(e){console.warn('音声の再開待機',e)}
+         }
+       });
+     }catch(e){
+       console.error('メロディ再生開始失敗',e);
+       endBell();alert('メロディを再生できませんでした。音声ファイルを確認してください。');
+     }
+     return;
+   }
   // 立川式とデコード未完了時は従来の再生方法を維持する。
   resetBellForReplay();
   sounds.bell.loop=true;
