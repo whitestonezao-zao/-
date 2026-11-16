@@ -50,6 +50,11 @@ body.layout-mobile .dialog select {width:100%;white-space:normal;}
 .bigbutton{-webkit-appearance:none;appearance:none;outline:none}
 .bigbutton:focus{outline:none}
 .bigbutton:focus-visible{outline:none;box-shadow:0 0 0 3px #b5f34a}
+/* Ver.17: iOS Safariで外側のリングが楕円にならないよう幅と高さを固定 */
+.ring{width:min(39vw,18dvh,190px);height:min(39vw,18dvh,190px);aspect-ratio:1/1;flex-shrink:0;min-width:0;min-height:0}
+body.layout-mobile .ring{width:clamp(130px,38vw,190px);height:clamp(130px,38vw,190px);flex-shrink:0}
+@media(max-width:380px){body.layout-mobile .ring{height:37vw}}
+@media(max-width:600px){body.layout-mobile .ring{width:min(17dvh,28vw);height:min(17dvh,28vw)}}
 </style></head><body>
 <button class="settings-button" id="gear" aria-label="設定">⚙</button><main class="cabinet"><div class="section"></div><div class="section"><div class="controls"><div class="indicators"><div class="rectangle"></div><div class="lamp" id="bellLamp"></div></div><div class="ring"><button class="bigbutton blue" id="bellButton" aria-label="発車メロディ"></button></div></div></div><div class="section"><div class="controls"><div class="indicators"><div class="rectangle"></div><div class="lamp" id="doorLamp"></div></div><div class="ring"><button class="bigbutton red" id="doorButton" aria-label="乗降終了合図"></button></div></div></div><div class="section"></div><div class="section"></div></main>
 <section class="dialog" id="settings"><div class="header"><h2>音声・モード設定</h2><button class="close" id="close">閉じる</button></div><div class="setting"><label for="layoutMode">表示モード</label><select id="layoutMode"><option value="auto">自動（画面幅で切り替え）</option><option value="pc">PC・iPadモード</option><option value="mobile">モバイルモード</option></select><p class="help">自動では画面幅600px以下をモバイル表示にします。手動選択も可能です。</p></div><div class="setting"><label for="mode">発車メロディのモード</label><select id="mode"><option value="normal">通常（停止までループ）</option><option value="tachikawa">立川式（停止操作後、現在のコーラス終わりで停止）</option></select></div><div class="setting"><label for="bellFile">発車メロディ</label><input type="file" id="bellFile" accept="audio/*,.mp3,.wav,.m4a,.ogg"><label class="file-pick" for="bellFile">ファイルを選択</label><p class="status" id="bellStatus">未登録</p></div><div class="setting"><label for="announceFile">発車放送</label><input type="file" id="announceFile" accept="audio/*,.mp3,.wav,.m4a,.ogg"><label class="file-pick" for="announceFile">ファイルを選択</label><p class="status" id="announceStatus">未登録（発車放送なし）</p><button type="button" class="close" id="clearAnnounce">発車放送なしにする</button></div><div class="setting"><label for="announceDelay">発車放送開始秒数</label><input type="number" id="announceDelay" min="0" max="3600" step="0.1" value="0" inputmode="decimal"> 秒<p class="help">発車メロディ開始から何秒後に発車放送を流すか設定します。</p></div><div class="setting"><label for="duck">発車放送中のメロディ音量（%）</label><input type="number" id="duck" min="0" max="100" step="1" value="30" inputmode="numeric"> %<p class="help">0〜100の数字を入力。放送が終わると100%に戻ります。</p></div><div class="setting"><label for="doorFile">乗降終了合図</label><input type="file" id="doorFile" accept="audio/*,.mp3,.wav,.m4a,.ogg"><label class="file-pick" for="doorFile">ファイルを選択</label><p class="status" id="doorStatus">未登録</p></div><p class="hint">設定と音声ファイルはこのブラウザに保存します。別の端末には自動で引き継がれません。ブラウザの保存データを消すと登録が失われる場合があります。</p></section>
@@ -65,6 +70,27 @@ applyLayout();
 const $=id=>document.getElementById(id);const sounds={bell:new Audio(),announce:new Audio(),door:new Audio()};const urls={};let bellPlaying=false,doorHeld=false,starting=false,stopPending=false,activeMode="normal";let announcementTimer=null,announcementGeneration=0;
 let audioContext=null,bellGain=null,announceBuffer=null,announceSource=null,announceStartAt=0,announceEndAt=0;
 let announceLoadVersion=0;
+let bellBuffer=null,bellLoadVersion=0,bellBufferSource=null;
+async function prepareBellBuffer(blob){
+  const version=++bellLoadVersion;
+  bellBuffer=null;
+  if(!blob)return;
+  try{
+    const ctx=ensureAudioContext();
+    if(!ctx)return;
+    const bytes=await blob.arrayBuffer();
+    const buffer=await ctx.decodeAudioData(bytes);
+    if(version===bellLoadVersion)bellBuffer=buffer;
+  }catch(e){console.warn('メロディのループ用デコードに失敗したため標準再生を使います',e)}
+}
+function stopBellBuffer(){
+  if(!bellBufferSource)return;
+  const source=bellBufferSource;
+  bellBufferSource=null;
+  source.onended=null;
+  try{source.stop()}catch(e){}
+  try{source.disconnect()}catch(e){}
+}
 let fallbackAnnouncementActive=false;
 let fallbackAnnouncementPending=false;
 let scheduledDuckSource=null;
@@ -104,7 +130,7 @@ function db(){return new Promise((resolve,reject)=>{const r=indexedDB.open('depa
 async function storeFile(key,file){const d=await db();return new Promise((resolve,reject)=>{const t=d.transaction('audio','readwrite');t.objectStore('audio').put({blob:file,name:file.name},key);t.oncomplete=resolve;t.onerror=()=>reject(t.error)})}
 async function deleteFile(key){const d=await db();return new Promise((resolve,reject)=>{const t=d.transaction('audio','readwrite');t.objectStore('audio').delete(key);t.oncomplete=resolve;t.onerror=()=>reject(t.error)})}
 async function readFile(key){const d=await db();return new Promise((resolve,reject)=>{const r=d.transaction('audio','readonly').objectStore('audio').get(key);r.onsuccess=()=>resolve(r.result);r.onerror=()=>reject(r.error)})}
-function setSource(key,blob,name){sounds[key].pause();if(urls[key])URL.revokeObjectURL(urls[key]);urls[key]=URL.createObjectURL(blob);sounds[key].src=urls[key];sounds[key].load();$(key+'Status').textContent='登録済み：'+name;if(key==='bell')endBell();if(key==='door')stopDoor();if(key==='announce'){clearScheduledAnnouncement();fallbackAnnouncementActive=false;prepareAnnouncement(blob)}}
+function setSource(key,blob,name){sounds[key].pause();if(urls[key])URL.revokeObjectURL(urls[key]);urls[key]=URL.createObjectURL(blob);sounds[key].src=urls[key];sounds[key].load();$(key+'Status').textContent='登録済み：'+name;if(key==='bell'){stopBellBuffer();endBell();prepareBellBuffer(blob)}if(key==='door')stopDoor();if(key==='announce'){clearScheduledAnnouncement();fallbackAnnouncementActive=false;prepareAnnouncement(blob)}}
 $('clearAnnounce').addEventListener('click',async()=>{try{await deleteFile('announce');clearScheduledAnnouncement();fallbackAnnouncementActive=false;++announceLoadVersion;announceBuffer=null;sounds.announce.pause();sounds.announce.removeAttribute('src');sounds.announce.load();if(urls.announce){URL.revokeObjectURL(urls.announce);delete urls.announce} $('announceFile').value='';$('announceStatus').textContent='未登録（発車放送なし）';adjustVolume()}catch(e){alert('発車放送の解除に失敗しました。もう一度お試しください。')}});
 for(const key of ['bell','announce','door']){$(key+'File').addEventListener('change',async e=>{const file=e.target.files?.[0];if(!file)return;try{await storeFile(key,file);setSource(key,file,file.name)}catch(err){alert('音声を保存できませんでした。容量などを確認してください。')}e.target.value=''})}
 (async()=>{for(const key of ['bell','announce','door']){try{const f=await readFile(key);if(f)setSource(key,f.blob,f.name)}catch(e){}}})();
@@ -194,7 +220,7 @@ function adjustVolume(){
     }
   }else sounds.bell.volume=target;
 }
-function endBell(){bellPlaying=false;starting=false;stopPending=false;sounds.bell.loop=false;$('bellLamp').classList.remove('lit')}
+function endBell(){stopBellBuffer();bellPlaying=false;starting=false;stopPending=false;sounds.bell.loop=false;$('bellLamp').classList.remove('lit')}
 // iOS Safariで停止位置の音が次回開始時に一瞬出ることがあるため、
 // 再生開始時にメディア要素のデコード状態を初期化する。
 function resetBellForReplay(){
@@ -204,9 +230,52 @@ function resetBellForReplay(){
   bell.load();
   try{bell.currentTime=0}catch(e){}
 }
-$('bellButton').addEventListener('click',()=>{if(starting)return;if(bellPlaying){if(activeMode==='tachikawa'){if(!stopPending){stopPending=true;sounds.bell.loop=false;$('bellLamp').classList.remove('lit');}return;}sounds.bell.pause();try{sounds.bell.currentTime=0}catch(e){}endBell();return}if(!sounds.bell.src){alert('先に設定から発車メロディを登録してください。');return}starting=true;bellPlaying=true;stopPending=false;activeMode=getMode();$('bellLamp').classList.add('lit');resetBellForReplay();sounds.bell.loop=true;
-// 再生操作の同期処理中に両方のplay()を呼び、モバイルの自動再生制限に対応する。
-const ctx=ensureAudioContext();if(ctx)ctx.resume().catch(()=>{});const p=sounds.bell.play();scheduleAnnouncement();adjustVolume();Promise.resolve(p).then(()=>{starting=false}).catch(()=>{sounds.bell.pause();endBell();alert('メロディを再生できませんでした。音声ファイルを確認してください。')})});
+$('bellButton').addEventListener('click',()=>{
+  if(starting)return;
+  if(bellPlaying){
+    if(activeMode==='tachikawa'){
+      if(!stopPending){stopPending=true;sounds.bell.loop=false;$('bellLamp').classList.remove('lit')}
+      return;
+    }
+    stopBellBuffer();
+    sounds.bell.pause();
+    try{sounds.bell.currentTime=0}catch(e){}
+    endBell();
+    return;
+  }
+  if(!sounds.bell.src){alert('先に設定から発車メロディを登録してください。');return}
+  starting=true;bellPlaying=true;stopPending=false;activeMode=getMode();
+  $('bellLamp').classList.add('lit');
+  const ctx=ensureAudioContext();
+  if(ctx)ctx.resume().catch(()=>{});
+  if(activeMode==='normal'&&ctx&&bellBuffer){
+    // デコード済み音声をWeb Audioでループ。MP3の最初のループでのseek乱れを避ける。
+    sounds.bell.pause();
+    const source=ctx.createBufferSource();
+    source.buffer=bellBuffer;
+    source.loop=true;
+    source.connect(bellGain);
+    bellBufferSource=source;
+    source.onended=()=>{if(bellBufferSource===source)endBell()};
+    try{
+      source.start();
+      scheduleAnnouncement();adjustVolume();
+      starting=false;
+    }catch(e){
+      stopBellBuffer();endBell();
+      alert('メロディを再生できませんでした。音声ファイルを確認してください。');
+    }
+    return;
+  }
+  // 立川式とデコード未完了時は従来の再生方法を維持する。
+  resetBellForReplay();
+  sounds.bell.loop=true;
+  const p=sounds.bell.play();
+  scheduleAnnouncement();adjustVolume();
+  Promise.resolve(p).then(()=>{starting=false}).catch(()=>{
+    sounds.bell.pause();endBell();alert('メロディを再生できませんでした。音声ファイルを確認してください。')
+  });
+});
 sounds.bell.addEventListener('ended',endBell);sounds.announce.addEventListener('play',()=>{fallbackAnnouncementActive=true;adjustVolume()});sounds.announce.addEventListener('pause',()=>{fallbackAnnouncementActive=false;adjustVolume()});sounds.announce.addEventListener('ended',()=>{fallbackAnnouncementActive=false;adjustVolume()});sounds.announce.addEventListener('error',()=>{fallbackAnnouncementActive=false;adjustVolume()});
 $('announceDelay').addEventListener('change',()=>{const v=getDelay();$('announceDelay').value=String(v);localStorage.setItem('bell-announce-delay-v7',String(v))});$('duck').addEventListener('input',()=>{const v=Number($('duck').value);if(Number.isFinite(v)&&v>=0&&v<=100){localStorage.setItem('bell-duck-v3',String(v));if(announceSource)scheduleDuckForWeb(announceSource);else adjustVolume()}});$('mode').addEventListener('change',()=>{localStorage.setItem('bell-mode-v3',getMode());/* 再生中のモードは次回の開始から反映 */});
 const savedDelay=localStorage.getItem('bell-announce-delay-v7');if(savedDelay!==null&&Number.isFinite(Number(savedDelay))&&Number(savedDelay)>=0&&Number(savedDelay)<=3600)$('announceDelay').value=savedDelay;const savedMode=localStorage.getItem('bell-mode-v3');if(['normal','tachikawa'].includes(savedMode))$('mode').value=savedMode;const savedDuck=localStorage.getItem('bell-duck-v3');if(savedDuck!==null&&Number(savedDuck)>=0&&Number(savedDuck)<=100)$('duck').value=savedDuck;
