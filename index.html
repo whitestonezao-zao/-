@@ -140,8 +140,8 @@ body:not(.layout-mobile) #doorButton::before {
   background:#ef3438;
   pointer-events:none;
 }
-body:not(.layout-mobile) #doorButton:active::before {filter:brightness(1.1)}
-/* Ver.26: Avoid WebKit rectangular compositing while the red control is held.
+body:not(.layout-mobile) #doorButton:active::before {filter:none}
+/* Ver.25: Avoid WebKit rectangular compositing while the red control is held.
    Use a solid pressed color rather than a CSS filter on the touch target. */
 body:not(.layout-mobile) #doorButton:active,
 body:not(.layout-mobile) #doorButton:focus,
@@ -156,9 +156,13 @@ body:not(.layout-mobile) #doorButton:active::before {
   -webkit-filter:none!important;
   background:#ff494e;
 }
+/* Ver.25: 赤ボタンの押下時にSafariが合成レイヤーを四角く描画するのを回避 */
+body:not(.layout-mobile) #doorButton { filter:none!important; transform:none!important; }
+body:not(.layout-mobile) #doorButton:active { filter:none!important; }
+body:not(.layout-mobile) #doorButton:active::before { filter:none!important; }
 </style></head><body>
 <button class="settings-button" id="gear" aria-label="設定">⚙</button><main class="cabinet"><div class="section"></div><div class="section"><div class="controls"><div class="indicators"><div class="rectangle"></div><div class="lamp" id="bellLamp"></div></div><div class="ring"><button class="bigbutton blue" id="bellButton" aria-label="発車メロディ"></button></div></div></div><div class="section"><div class="controls"><div class="indicators"><div class="rectangle"></div><div class="lamp" id="doorLamp"></div></div><div class="ring"><div class="bigbutton red" id="doorButton" role="button" tabindex="0" aria-label="乗降終了合図"></div></div></div></div><div class="section"></div><div class="section"></div></main>
-<section class="dialog" id="settings"><div class="header"><h2>音声・モード設定</h2><button class="close" id="close">閉じる</button></div><div class="setting"><label for="layoutMode">表示モード</label><select id="layoutMode"><option value="auto">自動（画面幅で切り替え）</option><option value="pc">PC・iPadモード</option><option value="mobile">モバイルモード</option></select><p class="help">自動では画面幅600px以下をモバイル表示にします。手動選択も可能です。</p></div><div class="setting"><label for="mode">発車メロディのモード</label><select id="mode"><option value="normal">通常（停止までループ）</option><option value="tachikawa">立川式（停止操作後、現在のコーラス終わりで停止）</option></select></div><div class="setting"><label for="bellFile">発車メロディ</label><input type="file" id="bellFile" accept="audio/*,.mp3,.wav,.m4a,.ogg"><label class="file-pick" for="bellFile">ファイルを選択</label><p class="status" id="bellStatus">未登録</p></div><div class="setting"><label for="announceFile">発車放送</label><input type="file" id="announceFile" accept="audio/*,.mp3,.wav,.m4a,.ogg"><label class="file-pick" for="announceFile">ファイルを選択</label><p class="status" id="announceStatus">未登録（発車放送なし）</p><button type="button" class="close" id="clearAnnounce">発車放送なしにする</button></div><div class="setting"><label for="announceDelay">発車放送開始秒数</label><input type="number" id="announceDelay" min="0" max="3600" step="0.1" value="0" inputmode="decimal"> 秒<p class="help">発車メロディ開始から何秒後に発車放送を流すか設定します。</p></div><div class="setting"><label for="duck">発車放送中のメロディ音量（%）</label><input type="number" id="duck" min="0" max="100" step="1" value="30" inputmode="numeric"> %<p class="help">0〜100の数字を入力。放送が終わると100%に戻ります。</p></div><div class="setting"><label for="doorFile">乗降終了合図</label><input type="file" id="doorFile" accept="audio/*,.mp3,.wav,.m4a,.ogg"><label class="file-pick" for="doorFile">ファイルを選択</label><p class="status" id="doorStatus">未登録</p></div><p class="hint">設定と音声ファイルはこのブラウザに保存します。別の端末には自動で引き継がれません。ブラウザの保存データを消すと登録が失われる場合があります。</p><p class="version-label" aria-label="アプリのバージョン">Ver.26</p></section>
+<section class="dialog" id="settings"><div class="header"><h2>音声・モード設定</h2><button class="close" id="close">閉じる</button></div><div class="setting"><label for="layoutMode">表示モード</label><select id="layoutMode"><option value="auto">自動（画面幅で切り替え）</option><option value="pc">PC・iPadモード</option><option value="mobile">モバイルモード</option></select><p class="help">自動では画面幅600px以下をモバイル表示にします。手動選択も可能です。</p></div><div class="setting"><label for="mode">発車メロディのモード</label><select id="mode"><option value="normal">通常（停止までループ）</option><option value="tachikawa">立川式（停止操作後、現在のコーラス終わりで停止）</option></select></div><div class="setting"><label for="bellFile">発車メロディ</label><input type="file" id="bellFile" accept="audio/*,.mp3,.wav,.m4a,.ogg"><label class="file-pick" for="bellFile">ファイルを選択</label><p class="status" id="bellStatus">未登録</p></div><div class="setting"><label for="announceFile">発車放送</label><input type="file" id="announceFile" accept="audio/*,.mp3,.wav,.m4a,.ogg"><label class="file-pick" for="announceFile">ファイルを選択</label><p class="status" id="announceStatus">未登録（発車放送なし）</p><button type="button" class="close" id="clearAnnounce">発車放送なしにする</button></div><div class="setting"><label for="announceDelay">発車放送開始秒数</label><input type="number" id="announceDelay" min="0" max="3600" step="0.1" value="0" inputmode="decimal"> 秒<p class="help">発車メロディ開始から何秒後に発車放送を流すか設定します。</p></div><div class="setting"><label for="duck">発車放送中のメロディ音量（%）</label><input type="number" id="duck" min="0" max="100" step="1" value="30" inputmode="numeric"> %<p class="help">0〜100の数字を入力。放送が終わると100%に戻ります。</p></div><div class="setting"><label for="doorFile">乗降終了合図</label><input type="file" id="doorFile" accept="audio/*,.mp3,.wav,.m4a,.ogg"><label class="file-pick" for="doorFile">ファイルを選択</label><p class="status" id="doorStatus">未登録</p></div><p class="hint">設定と音声ファイルはこのブラウザに保存します。別の端末には自動で引き継がれません。ブラウザの保存データを消すと登録が失われる場合があります。</p><p class="version-label" aria-label="アプリのバージョン">Ver.25</p></section>
 <script>
 (()=>{'use strict';
 const layoutSelect=document.getElementById('layoutMode');
@@ -389,7 +393,16 @@ let bellStartGeneration=0;
 $('bellButton').addEventListener('click',()=>{
   if(bellPlaying){
     if(activeMode==='tachikawa'){
-      if(!stopPending){stopPending=true;sounds.bell.loop=false;$('bellLamp').classList.remove('lit')}
+      if(stopPending){
+        // 停止予約中に再度ON: 再生位置を変えず、現在のコーラスからループを再開。
+        stopPending=false;
+        sounds.bell.loop=true;
+        $('bellLamp').classList.add('lit');
+      }else{
+        stopPending=true;
+        sounds.bell.loop=false;
+        $('bellLamp').classList.remove('lit');
+      }
       return;
     }
     ++bellStartGeneration;
@@ -449,11 +462,10 @@ sounds.bell.addEventListener('ended',endBell);sounds.announce.addEventListener('
 $('announceDelay').addEventListener('change',()=>{const v=getDelay();$('announceDelay').value=String(v);localStorage.setItem('bell-announce-delay-v7',String(v))});$('duck').addEventListener('input',()=>{const v=Number($('duck').value);if(Number.isFinite(v)&&v>=0&&v<=100){localStorage.setItem('bell-duck-v3',String(v));if(announceSource)scheduleDuckForWeb(announceSource);else adjustVolume()}});$('mode').addEventListener('change',()=>{localStorage.setItem('bell-mode-v3',getMode());/* 再生中のモードは次回の開始から反映 */});
 const savedDelay=localStorage.getItem('bell-announce-delay-v7');if(savedDelay!==null&&Number.isFinite(Number(savedDelay))&&Number(savedDelay)>=0&&Number(savedDelay)<=3600)$('announceDelay').value=savedDelay;const savedMode=localStorage.getItem('bell-mode-v3');if(['normal','tachikawa'].includes(savedMode))$('mode').value=savedMode;const savedDuck=localStorage.getItem('bell-duck-v3');if(savedDuck!==null&&Number(savedDuck)>=0&&Number(savedDuck)<=100)$('duck').value=savedDuck;
 const door=$('doorButton');function stopDoor(){doorHeld=false;sounds.door.pause();if(sounds.door.src)try{sounds.door.currentTime=0}catch(e){}$('doorLamp').classList.remove('lit')}
-function startDoor(e){unlockAudioForGesture();e.preventDefault();if(doorHeld)return;if(!sounds.door.src){alert('先に設定から乗降終了合図を登録してください。');return}doorHeld=true;$('doorLamp').classList.add('lit');sounds.door.currentTime=0;if(e.pointerId!==undefined)door.setPointerCapture?.(e.pointerId);sounds.door.play().catch(()=>stopDoor())}
+function startDoor(e){unlockAudioForGesture();e.preventDefault();if(doorHeld)return;if(!sounds.door.src){alert('先に設定から乗降終了合図を登録してください。');return}doorHeld=true;$('doorLamp').classList.add('lit');sounds.door.currentTime=0;/* iPad Safariの押下時描画不具合を避けるためpointer captureは使わない */sounds.door.play().catch(()=>stopDoor())}
 door.addEventListener('pointerdown',startDoor);
 door.addEventListener('keydown',e=>{if((e.key===' '||e.key==='Enter')&&!e.repeat)startDoor(e)});
-door.addEventListener('keyup',e=>{if(e.key===' '||e.key==='Enter'){e.preventDefault();stopDoor()}});for(const event of ['pointerup','pointercancel','lostpointercapture'])door.addEventListener(event,stopDoor);sounds.door.addEventListener('ended',stopDoor);window.addEventListener('blur',stopDoor);document.addEventListener('visibilitychange',()=>{if(document.hidden)stopDoor()});
+door.addEventListener('keyup',e=>{if(e.key===' '||e.key==='Enter'){e.preventDefault();stopDoor()}});for(const event of ['pointerup','pointercancel'])window.addEventListener(event,stopDoor);sounds.door.addEventListener('ended',stopDoor);window.addEventListener('blur',stopDoor);document.addEventListener('visibilitychange',()=>{if(document.hidden)stopDoor()});
 $('gear').onclick=()=>$('settings').classList.add('open');$('close').onclick=()=>$('settings').classList.remove('open');
 })();
 </script></body></html>
-
