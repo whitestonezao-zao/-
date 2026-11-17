@@ -127,7 +127,7 @@ body.mic-available .mic-panel{display:block}
 .mic-panel small{display:block;font-size:10px;margin-top:4px;color:#ddd}
 </style></head><body>
 <button class="settings-button" id="gear" aria-label="設定">⚙</button><main class="cabinet"><div class="section"></div><div class="section"><div class="controls"><div class="indicators"><div class="rectangle"></div><div class="lamp" id="bellLamp"></div></div><div class="ring"><button class="bigbutton blue" id="bellButton" aria-label="発車メロディ"></button></div></div></div><div class="section"><div class="controls"><div class="indicators"><div class="rectangle"></div><div class="lamp" id="doorLamp"></div></div><div class="ring"><button class="bigbutton red" id="doorButton" aria-label="乗降終了合図"></button></div></div></div><div class="section"></div><div class="section"></div></main>
-<aside class="mic-panel" id="micPanel" aria-label="肉声放送マイク"><button id="micButton" type="button" aria-pressed="false">OFF</button><small id="micStatus">マイク</small></aside><section class="dialog" id="settings"><div class="header"><h2>音声・モード設定</h2><button class="close" id="close">閉じる</button></div><div class="setting"><label for="layoutMode">表示モード</label><select id="layoutMode"><option value="auto">自動（画面幅で切り替え）</option><option value="pc">PC・iPadモード</option><option value="mobile">モバイルモード</option></select><p class="help">自動では画面幅600px以下をモバイル表示にします。手動選択も可能です。</p></div><div class="setting"><label for="mode">発車メロディのモード</label><select id="mode"><option value="normal">通常（停止までループ）</option><option value="tachikawa">立川式（停止操作後、現在のコーラス終わりで停止）</option></select></div><div class="setting"><label for="bellFile">発車メロディ</label><input type="file" id="bellFile" accept="audio/*,.mp3,.wav,.m4a,.ogg"><label class="file-pick" for="bellFile">ファイルを選択</label><p class="status" id="bellStatus">未登録</p></div><div class="setting"><label for="announceFile">発車放送</label><input type="file" id="announceFile" accept="audio/*,.mp3,.wav,.m4a,.ogg"><label class="file-pick" for="announceFile">ファイルを選択</label><p class="status" id="announceStatus">未登録（発車放送なし）</p><button type="button" class="close" id="clearAnnounce">発車放送なしにする</button></div><div class="setting"><label for="announceDelay">発車放送開始秒数</label><input type="number" id="announceDelay" min="0" max="3600" step="0.1" value="0" inputmode="decimal"> 秒<p class="help">発車メロディ開始から何秒後に発車放送を流すか設定します。</p></div><div class="setting"><label for="duck">発車放送中のメロディ音量（%）</label><input type="number" id="duck" min="0" max="100" step="1" value="30" inputmode="numeric"> %<p class="help">0〜100の数字を入力。放送が終わると100%に戻ります。</p></div><div class="setting" id="micSettings" style="display:none"><label for="micEnabled">肉声放送マイク（スマホ専用）</label><label style="font-weight:400"><input type="checkbox" id="micEnabled"> マイク機能を有効にする</label><label for="micSide">マイクパネルの位置</label><select id="micSide"><option value="left">左側</option><option value="right">右側</option></select><p class="help">Bluetoothまたは有線イヤホン等を接続してから使用してください。対応端末ではマイク用の音声モードを設定しますが、iOSの制限によりBluetooth出力を固定することはできません。マイクの音がスピーカーに戻るとハウリングすることがあります。音量は小さくしてお試しください。マイクの位置（上部・下部）はブラウザから指定できません。</p></div><div class="setting"><label for="doorFile">乗降終了合図</label><input type="file" id="doorFile" accept="audio/*,.mp3,.wav,.m4a,.ogg"><label class="file-pick" for="doorFile">ファイルを選択</label><p class="status" id="doorStatus">未登録</p></div><p class="hint">設定と音声ファイルはこのブラウザに保存します。別の端末には自動で引き継がれません。ブラウザの保存データを消すと登録が失われる場合があります。</p><p class="version-label" aria-label="アプリのバージョン">Ver.26</p></section>
+<aside class="mic-panel" id="micPanel" aria-label="肉声放送マイク"><button id="micButton" type="button" aria-pressed="false">OFF</button><small id="micStatus">マイク</small></aside><section class="dialog" id="settings"><div class="header"><h2>音声・モード設定</h2><button class="close" id="close">閉じる</button></div><div class="setting"><label for="layoutMode">表示モード</label><select id="layoutMode"><option value="auto">自動（画面幅で切り替え）</option><option value="pc">PC・iPadモード</option><option value="mobile">モバイルモード</option></select><p class="help">自動では画面幅600px以下をモバイル表示にします。手動選択も可能です。</p></div><div class="setting"><label for="mode">発車メロディのモード</label><select id="mode"><option value="normal">通常（停止までループ）</option><option value="tachikawa">立川式（停止操作後、現在のコーラス終わりで停止）</option></select></div><div class="setting"><label for="bellFile">発車メロディ</label><input type="file" id="bellFile" accept="audio/*,.mp3,.wav,.m4a,.ogg"><label class="file-pick" for="bellFile">ファイルを選択</label><p class="status" id="bellStatus">未登録</p></div><div class="setting"><label for="announceFile">発車放送</label><input type="file" id="announceFile" accept="audio/*,.mp3,.wav,.m4a,.ogg"><label class="file-pick" for="announceFile">ファイルを選択</label><p class="status" id="announceStatus">未登録（発車放送なし）</p><button type="button" class="close" id="clearAnnounce">発車放送なしにする</button></div><div class="setting"><label for="announceDelay">発車放送開始秒数</label><input type="number" id="announceDelay" min="0" max="3600" step="0.1" value="0" inputmode="decimal"> 秒<p class="help">発車メロディ開始から何秒後に発車放送を流すか設定します。</p></div><div class="setting"><label for="duck">発車放送中のメロディ音量（%）</label><input type="number" id="duck" min="0" max="100" step="1" value="30" inputmode="numeric"> %<p class="help">0〜100の数字を入力。放送が終わると100%に戻ります。</p></div><div class="setting" id="micSettings" style="display:none"><label for="micEnabled">肉声放送マイク（スマホ専用）</label><label style="font-weight:400"><input type="checkbox" id="micEnabled"> 肉声マイクを使用する（OFFでも放送ボタンは使えます）</label><label for="micSide">マイクパネルの位置</label><select id="micSide"><option value="left">左側</option><option value="right">右側</option></select><p class="help">肉声マイクをOFFにしても、放送ボタンで自動放送のミュートとメロディ減音ができます。肉声マイクをONにする場合はBluetoothまたは有線イヤホン等を接続してください。iOSではマイク起動によって音声の出力先が変わる場合があり、ブラウザから固定できません。ハウリングに注意し、最初は小音量でお試しください。使用する物理マイクの位置は指定できません。</p></div><div class="setting"><label for="doorFile">乗降終了合図</label><input type="file" id="doorFile" accept="audio/*,.mp3,.wav,.m4a,.ogg"><label class="file-pick" for="doorFile">ファイルを選択</label><p class="status" id="doorStatus">未登録</p></div><p class="hint">設定と音声ファイルはこのブラウザに保存します。別の端末には自動で引き継がれません。ブラウザの保存データを消すと登録が失われる場合があります。</p><p class="version-label" aria-label="アプリのバージョン">Ver.26</p></section>
 <script>
 (()=>{'use strict';
 const layoutSelect=document.getElementById('layoutMode');
@@ -422,71 +422,80 @@ $('announceDelay').addEventListener('change',()=>{const v=getDelay();$('announce
 const savedDelay=localStorage.getItem('bell-announce-delay-v7');if(savedDelay!==null&&Number.isFinite(Number(savedDelay))&&Number(savedDelay)>=0&&Number(savedDelay)<=3600)$('announceDelay').value=savedDelay;const savedMode=localStorage.getItem('bell-mode-v3');if(['normal','tachikawa'].includes(savedMode))$('mode').value=savedMode;const savedDuck=localStorage.getItem('bell-duck-v3');if(savedDuck!==null&&Number(savedDuck)>=0&&Number(savedDuck)<=100)$('duck').value=savedDuck;
 const door=$('doorButton');function stopDoor(){doorHeld=false;sounds.door.pause();if(sounds.door.src)try{sounds.door.currentTime=0}catch(e){}$('doorLamp').classList.remove('lit')}
 door.addEventListener('pointerdown',e=>{unlockAudioForGesture();e.preventDefault();if(doorHeld)return;if(!sounds.door.src){alert('先に設定から乗降終了合図を登録してください。');return}doorHeld=true;$('doorLamp').classList.add('lit');sounds.door.currentTime=0;door.setPointerCapture?.(e.pointerId);sounds.door.play().catch(()=>stopDoor())});for(const event of ['pointerup','pointercancel','lostpointercapture'])door.addEventListener(event,stopDoor);sounds.door.addEventListener('ended',stopDoor);window.addEventListener('blur',stopDoor);document.addEventListener('visibilitychange',()=>{if(document.hidden)stopDoor()});
-// Smartphone-only live microphone. No recording or persistence of microphone audio.
+// Ver.26: Smartphone-only announcement override button.
+// The setting controls LIVE microphone capture, not whether the override button exists.
+// No audioSession type changes: they could disturb Bluetooth routing when toggled.
 const isPhone=/iPhone|iPod|Android.*Mobile/i.test(navigator.userAgent)&&!/iPad/i.test(navigator.userAgent);
 let micActive=false,micBusy=false,micStream=null,micSource=null,micEnabled=false,micRequest=0;
-let previousAudioSessionType=null;
-function setMicAudioSession(){
-  // On supporting iOS Safari versions, request the duplex audio session explicitly.
-  // The OS still decides the actual Bluetooth / wired / built-in output route.
-  try{
-    const session=navigator.audioSession;
-    if(!session)return;
-    if(previousAudioSessionType===null)previousAudioSessionType=session.type;
-    session.type='play-and-record';
-  }catch(e){console.warn('マイク用音声セッションを設定できませんでした',e)}
-}
-function restoreMicAudioSession(){
-  try{
-    if(previousAudioSessionType!==null&&navigator.audioSession){
-      navigator.audioSession.type=previousAudioSessionType;
-    }
-  }catch(e){console.warn('音声セッションを復元できませんでした',e)}
-  previousAudioSessionType=null;
-}
 const micPanel=$('micPanel'),micButton=$('micButton'),micStatus=$('micStatus');
 function renderMic(){
-  const visible=isPhone&&micEnabled;
-  document.body.classList.toggle('mic-available',visible);
+  document.body.classList.toggle('mic-available',isPhone);
   micPanel.classList.toggle('right',$('micSide').value==='right');
-  micButton.textContent=micActive?'ON':'OFF';micButton.classList.toggle('on',micActive);
-  micButton.setAttribute('aria-pressed',String(micActive));micButton.disabled=micBusy;
-  micStatus.textContent=micBusy?'接続中':micActive?'放送中':'マイク';
+  micButton.textContent=micActive?'ON':'OFF';
+  micButton.classList.toggle('on',micActive);
+  micButton.setAttribute('aria-pressed',String(micActive));
+  // Even while the OS asks for microphone permission, the user can switch OFF.
+  micButton.disabled=false;
+  micStatus.textContent=micBusy?'マイク接続中':micActive?(micEnabled?'肉声放送':'放送操作'):'放送';
+}
+function releaseLiveMic(){
+  if(micSource){try{micSource.disconnect()}catch(e){}micSource=null}
+  if(micStream){micStream.getTracks().forEach(t=>t.stop());micStream=null}
 }
 function stopMic(){
   ++micRequest;
-  if(micSource){try{micSource.disconnect()}catch(e){}micSource=null}
-  if(micStream){micStream.getTracks().forEach(t=>t.stop());micStream=null}
-  restoreMicAudioSession();
-  micActive=false;micBusy=false;adjustVolume();renderMic();
+  releaseLiveMic();
+  micActive=false;micBusy=false;
+  adjustVolume();renderMic();
 }
-async function startMic(){
-  if(!isPhone||!micEnabled)return;
-  if(!navigator.mediaDevices?.getUserMedia){alert('このブラウザではマイクを利用できません。');return}
-  const request=++micRequest;setMicAudioSession();unlockAudioForGesture();micBusy=true;renderMic();
+async function startLiveMic(request){
+  if(!navigator.mediaDevices?.getUserMedia){
+    micBusy=false;renderMic();
+    console.warn('このブラウザでは肉声マイクを利用できません。放送操作のみ継続します。');
+    return;
+  }
+  micBusy=true;renderMic();
   try{
-    // Browser/OS selects the actual physical microphone; its top/bottom position cannot be forced.
+    // The OS selects the physical microphone and output route.
     const stream=await navigator.mediaDevices.getUserMedia({audio:{echoCancellation:true,noiseSuppression:true,autoGainControl:true},video:false});
-    if(request!==micRequest||!micEnabled){stream.getTracks().forEach(t=>t.stop());return}
+    if(request!==micRequest||!micActive||!micEnabled){stream.getTracks().forEach(t=>t.stop());return}
     const ctx=unlockAudioForGesture();
     if(!ctx){stream.getTracks().forEach(t=>t.stop());throw new Error('Web Audio unavailable')}
     const source=ctx.createMediaStreamSource(stream);
     source.connect(ctx.destination);
-    micStream=stream;micSource=source;micActive=true;
-    stream.getAudioTracks().forEach(t=>t.addEventListener('ended',()=>{if(micStream===stream)stopMic()}));
+    micStream=stream;micSource=source;
+    stream.getAudioTracks().forEach(t=>t.addEventListener('ended',()=>{if(micStream===stream){releaseLiveMic();renderMic()}}));
     if(ctx.state!=='running')ctx.resume().catch(()=>{});
-  }catch(e){if(request===micRequest){restoreMicAudioSession();alert('マイクを開始できませんでした。マイクの許可と接続機器を確認してください。')}}
-  finally{if(request===micRequest){micBusy=false;adjustVolume();renderMic()}}
+  }catch(e){
+    if(request===micRequest)console.warn('肉声マイクを開始できませんでした。放送操作のみ継続します。',e);
+  }finally{
+    if(request===micRequest){micBusy=false;renderMic()}
+  }
 }
-micButton.addEventListener('click',()=>{if(micActive||micBusy)stopMic();else startMic()});
+function startMic(){
+  if(!isPhone)return;
+  micActive=true;
+  const request=++micRequest;
+  adjustVolume();renderMic();
+  // No getUserMedia and no audio-session changes when live mic is disabled.
+  if(micEnabled){unlockAudioForGesture();startLiveMic(request)}
+}
+micButton.addEventListener('click',()=>{if(micActive)stopMic();else startMic()});
 $('micSettings').style.display=isPhone?'block':'none';
 micEnabled=isPhone&&localStorage.getItem('bell-mic-enabled-v26')==='1';
 $('micEnabled').checked=micEnabled;
 $('micSide').value=localStorage.getItem('bell-mic-side-v26')==='right'?'right':'left';
-$('micEnabled').addEventListener('change',()=>{micEnabled=$('micEnabled').checked;localStorage.setItem('bell-mic-enabled-v26',micEnabled?'1':'0');if(!micEnabled)stopMic();renderMic()});
+$('micEnabled').addEventListener('change',()=>{
+  micEnabled=$('micEnabled').checked;
+  localStorage.setItem('bell-mic-enabled-v26',micEnabled?'1':'0');
+  // Reconfigure the live microphone without resetting the ON/OFF broadcast override.
+  ++micRequest;releaseLiveMic();micBusy=false;
+  if(micActive&&micEnabled){unlockAudioForGesture();startLiveMic(micRequest)}
+  renderMic();
+});
 $('micSide').addEventListener('change',()=>{localStorage.setItem('bell-mic-side-v26',$('micSide').value);renderMic()});
-layoutSelect.addEventListener('change',()=>{renderMic()});
-if(mq.addEventListener)mq.addEventListener('change',()=>{renderMic()});
+layoutSelect.addEventListener('change',renderMic);
+if(mq.addEventListener)mq.addEventListener('change',renderMic);
 document.addEventListener('visibilitychange',()=>{if(document.hidden)stopMic()});
 window.addEventListener('pagehide',stopMic);
 renderMic();
