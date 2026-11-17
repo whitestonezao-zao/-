@@ -127,7 +127,7 @@ body.mic-available .mic-panel{display:block}
 .mic-panel small{display:block;font-size:10px;margin-top:4px;color:#ddd}
 </style></head><body>
 <button class="settings-button" id="gear" aria-label="設定">⚙</button><main class="cabinet"><div class="section"></div><div class="section"><div class="controls"><div class="indicators"><div class="rectangle"></div><div class="lamp" id="bellLamp"></div></div><div class="ring"><button class="bigbutton blue" id="bellButton" aria-label="発車メロディ"></button></div></div></div><div class="section"><div class="controls"><div class="indicators"><div class="rectangle"></div><div class="lamp" id="doorLamp"></div></div><div class="ring"><button class="bigbutton red" id="doorButton" aria-label="乗降終了合図"></button></div></div></div><div class="section"></div><div class="section"></div></main>
-<aside class="mic-panel" id="micPanel" aria-label="肉声放送マイク"><button id="micButton" type="button" aria-pressed="false">OFF</button><small id="micStatus">マイク</small></aside><section class="dialog" id="settings"><div class="header"><h2>音声・モード設定</h2><button class="close" id="close">閉じる</button></div><div class="setting"><label for="layoutMode">表示モード</label><select id="layoutMode"><option value="auto">自動（画面幅で切り替え）</option><option value="pc">PC・iPadモード</option><option value="mobile">モバイルモード</option></select><p class="help">自動では画面幅600px以下をモバイル表示にします。手動選択も可能です。</p></div><div class="setting"><label for="mode">発車メロディのモード</label><select id="mode"><option value="normal">通常（停止までループ）</option><option value="tachikawa">立川式（停止操作後、現在のコーラス終わりで停止）</option></select></div><div class="setting"><label for="bellFile">発車メロディ</label><input type="file" id="bellFile" accept="audio/*,.mp3,.wav,.m4a,.ogg"><label class="file-pick" for="bellFile">ファイルを選択</label><p class="status" id="bellStatus">未登録</p></div><div class="setting"><label for="announceFile">発車放送</label><input type="file" id="announceFile" accept="audio/*,.mp3,.wav,.m4a,.ogg"><label class="file-pick" for="announceFile">ファイルを選択</label><p class="status" id="announceStatus">未登録（発車放送なし）</p><button type="button" class="close" id="clearAnnounce">発車放送なしにする</button></div><div class="setting"><label for="announceDelay">発車放送開始秒数</label><input type="number" id="announceDelay" min="0" max="3600" step="0.1" value="0" inputmode="decimal"> 秒<p class="help">発車メロディ開始から何秒後に発車放送を流すか設定します。</p></div><div class="setting"><label for="duck">発車放送中のメロディ音量（%）</label><input type="number" id="duck" min="0" max="100" step="1" value="30" inputmode="numeric"> %<p class="help">0〜100の数字を入力。放送が終わると100%に戻ります。</p></div><div class="setting" id="micSettings" style="display:none"><label for="micEnabled">肉声放送マイク（スマホ専用）</label><label style="font-weight:400"><input type="checkbox" id="micEnabled"> 肉声マイクを使用する（OFFでも放送ボタンは使えます）</label><label for="micSide">マイクパネルの位置</label><select id="micSide"><option value="left">左側</option><option value="right">右側</option></select><p class="help">肉声マイクをOFFにしても、放送ボタンで自動放送のミュートとメロディ減音ができます。肉声マイクをONにする場合はBluetoothまたは有線イヤホン等を接続してください。iOSではマイク起動によって音声の出力先が変わる場合があり、ブラウザから固定できません。ハウリングに注意し、最初は小音量でお試しください。使用する物理マイクの位置は指定できません。</p></div><div class="setting"><label for="doorFile">乗降終了合図</label><input type="file" id="doorFile" accept="audio/*,.mp3,.wav,.m4a,.ogg"><label class="file-pick" for="doorFile">ファイルを選択</label><p class="status" id="doorStatus">未登録</p></div><p class="hint">設定と音声ファイルはこのブラウザに保存します。別の端末には自動で引き継がれません。ブラウザの保存データを消すと登録が失われる場合があります。</p><p class="version-label" aria-label="アプリのバージョン">Ver.26</p></section>
+<aside class="mic-panel" id="micPanel" aria-label="肉声放送マイク"><button id="micButton" type="button" aria-pressed="false">OFF</button><small id="micStatus">マイク</small></aside><section class="dialog" id="settings"><div class="header"><h2>音声・モード設定</h2><button class="close" id="close">閉じる</button></div><div class="setting"><label for="layoutMode">表示モード</label><select id="layoutMode"><option value="auto">自動（画面幅で切り替え）</option><option value="pc">PC・iPadモード</option><option value="mobile">モバイルモード</option></select><p class="help">自動では画面幅600px以下をモバイル表示にします。手動選択も可能です。</p></div><div class="setting"><label for="mode">発車メロディのモード</label><select id="mode"><option value="normal">通常（停止までループ）</option><option value="tachikawa">立川式（停止操作後、現在のコーラス終わりで停止）</option></select></div><div class="setting"><label for="bellFile">発車メロディ</label><input type="file" id="bellFile" accept="audio/*,.mp3,.wav,.m4a,.ogg"><label class="file-pick" for="bellFile">ファイルを選択</label><p class="status" id="bellStatus">未登録</p></div><div class="setting"><label for="announceFile">発車放送</label><input type="file" id="announceFile" accept="audio/*,.mp3,.wav,.m4a,.ogg"><label class="file-pick" for="announceFile">ファイルを選択</label><p class="status" id="announceStatus">未登録（発車放送なし）</p><button type="button" class="close" id="clearAnnounce">発車放送なしにする</button></div><div class="setting"><label for="announceDelay">発車放送開始秒数</label><input type="number" id="announceDelay" min="0" max="3600" step="0.1" value="0" inputmode="decimal"> 秒<p class="help">発車メロディ開始から何秒後に発車放送を流すか設定します。</p></div><div class="setting"><label for="duck">発車放送中のメロディ音量（%）</label><input type="number" id="duck" min="0" max="100" step="1" value="30" inputmode="numeric"> %<p class="help">0〜100の数字を入力。放送が終わると100%に戻ります。</p></div><div class="setting" id="micSettings" style="display:none"><label for="micEnabled">肉声放送マイク（スマホ専用）</label><label style="font-weight:400"><input type="checkbox" id="micEnabled"> 肉声マイクを使用する（OFFでも放送ボタンは使えます）</label><label for="micSide">マイクパネルの位置</label><select id="micSide"><option value="left">左側</option><option value="right">右側</option></select><p class="help">肉声マイクをOFFにしても、放送ボタンで自動放送のミュートとメロディ減音ができます。肉声マイクをONにする場合はBluetoothまたは有線イヤホン等を接続してください。iOSではマイク起動によって音声の出力先が変わる場合があり、ブラウザから固定できません。ハウリングに注意し、最初は小音量でお試しください。使用する物理マイクの位置は指定できません。肉声マイク使用ONの場合、放送ボタンをOFFにしてもマイク接続は維持されます（音声出力のみミュート）。設定で使用OFFにするかページを離れると接続を終了します。</p></div><div class="setting"><label for="doorFile">乗降終了合図</label><input type="file" id="doorFile" accept="audio/*,.mp3,.wav,.m4a,.ogg"><label class="file-pick" for="doorFile">ファイルを選択</label><p class="status" id="doorStatus">未登録</p></div><p class="hint">設定と音声ファイルはこのブラウザに保存します。別の端末には自動で引き継がれません。ブラウザの保存データを消すと登録が失われる場合があります。</p><p class="version-label" aria-label="アプリのバージョン">Ver.27</p></section>
 <script>
 (()=>{'use strict';
 const layoutSelect=document.getElementById('layoutMode');
@@ -426,7 +426,7 @@ door.addEventListener('pointerdown',e=>{unlockAudioForGesture();e.preventDefault
 // The setting controls LIVE microphone capture, not whether the override button exists.
 // No audioSession type changes: they could disturb Bluetooth routing when toggled.
 const isPhone=/iPhone|iPod|Android.*Mobile/i.test(navigator.userAgent)&&!/iPad/i.test(navigator.userAgent);
-let micActive=false,micBusy=false,micStream=null,micSource=null,micEnabled=false,micRequest=0;
+let micActive=false,micBusy=false,micStream=null,micSource=null,micGain=null,micEnabled=false,micRequest=0;
 const micPanel=$('micPanel'),micButton=$('micButton'),micStatus=$('micStatus');
 function renderMic(){
   document.body.classList.toggle('mic-available',isPhone);
@@ -436,36 +436,51 @@ function renderMic(){
   micButton.setAttribute('aria-pressed',String(micActive));
   // Even while the OS asks for microphone permission, the user can switch OFF.
   micButton.disabled=false;
-  micStatus.textContent=micBusy?'マイク接続中':micActive?(micEnabled?'肉声放送':'放送操作'):'放送';
+  micStatus.textContent=micBusy?'マイク接続中':micActive?(micEnabled?'肉声放送':'放送操作'):(micEnabled&&micStream?'マイク待機中':'放送');
+}
+// Ver.27: Keep the microphone capture session alive between broadcast ON/OFF toggles.
+// Only the microphone's output gain changes; this avoids repeated getUserMedia/track.stop
+// calls that can renegotiate iOS Bluetooth routing. Settings OFF or page exit releases it.
+function setMicOutput(){
+  if(micGain&&audioContext){
+    const now=audioContext.currentTime;
+    micGain.gain.cancelScheduledValues(now);
+    micGain.gain.setValueAtTime(micActive&&micEnabled?1:0,now);
+  }
 }
 function releaseLiveMic(){
+  if(micGain){try{micGain.disconnect()}catch(e){}micGain=null}
   if(micSource){try{micSource.disconnect()}catch(e){}micSource=null}
   if(micStream){micStream.getTracks().forEach(t=>t.stop());micStream=null}
 }
 function stopMic(){
-  ++micRequest;
-  releaseLiveMic();
-  micActive=false;micBusy=false;
+  micActive=false;
+  // Do NOT stop the capture or close the audio session on broadcast OFF.
+  setMicOutput();
   adjustVolume();renderMic();
 }
 async function startLiveMic(request){
+  if(micStream&&micStream.active){setMicOutput();return}
+  if(micBusy)return;
   if(!navigator.mediaDevices?.getUserMedia){
-    micBusy=false;renderMic();
-    console.warn('このブラウザでは肉声マイクを利用できません。放送操作のみ継続します。');
-    return;
+    renderMic();console.warn('このブラウザでは肉声マイクを利用できません。放送操作のみ継続します。');return;
   }
   micBusy=true;renderMic();
   try{
-    // The OS selects the physical microphone and output route.
     const stream=await navigator.mediaDevices.getUserMedia({audio:{echoCancellation:true,noiseSuppression:true,autoGainControl:true},video:false});
-    if(request!==micRequest||!micActive||!micEnabled){stream.getTracks().forEach(t=>t.stop());return}
+    if(request!==micRequest||!micEnabled){stream.getTracks().forEach(t=>t.stop());return}
     const ctx=unlockAudioForGesture();
     if(!ctx){stream.getTracks().forEach(t=>t.stop());throw new Error('Web Audio unavailable')}
     const source=ctx.createMediaStreamSource(stream);
-    source.connect(ctx.destination);
-    micStream=stream;micSource=source;
-    stream.getAudioTracks().forEach(t=>t.addEventListener('ended',()=>{if(micStream===stream){releaseLiveMic();renderMic()}}));
+    const gain=ctx.createGain();
+    gain.gain.value=micActive?1:0;
+    source.connect(gain).connect(ctx.destination);
+    micStream=stream;micSource=source;micGain=gain;
+    stream.getAudioTracks().forEach(t=>t.addEventListener('ended',()=>{
+      if(micStream===stream){releaseLiveMic();micBusy=false;renderMic()}
+    }));
     if(ctx.state!=='running')ctx.resume().catch(()=>{});
+    setMicOutput();
   }catch(e){
     if(request===micRequest)console.warn('肉声マイクを開始できませんでした。放送操作のみ継続します。',e);
   }finally{
@@ -475,10 +490,12 @@ async function startLiveMic(request){
 function startMic(){
   if(!isPhone)return;
   micActive=true;
-  const request=++micRequest;
   adjustVolume();renderMic();
-  // No getUserMedia and no audio-session changes when live mic is disabled.
-  if(micEnabled){unlockAudioForGesture();startLiveMic(request)}
+  if(micEnabled){
+    unlockAudioForGesture();
+    if(micStream&&micStream.active)setMicOutput();
+    else startLiveMic(micRequest);
+  }
 }
 micButton.addEventListener('click',()=>{if(micActive)stopMic();else startMic()});
 $('micSettings').style.display=isPhone?'block':'none';
@@ -488,18 +505,21 @@ $('micSide').value=localStorage.getItem('bell-mic-side-v26')==='right'?'right':'
 $('micEnabled').addEventListener('change',()=>{
   micEnabled=$('micEnabled').checked;
   localStorage.setItem('bell-mic-enabled-v26',micEnabled?'1':'0');
-  // Reconfigure the live microphone without resetting the ON/OFF broadcast override.
-  ++micRequest;releaseLiveMic();micBusy=false;
-  if(micActive&&micEnabled){unlockAudioForGesture();startLiveMic(micRequest)}
-  renderMic();
+  if(!micEnabled){
+    ++micRequest;releaseLiveMic();micBusy=false;
+  }else if(micActive){
+    unlockAudioForGesture();startLiveMic(micRequest);
+  }
+  setMicOutput();renderMic();
 });
 $('micSide').addEventListener('change',()=>{localStorage.setItem('bell-mic-side-v26',$('micSide').value);renderMic()});
 layoutSelect.addEventListener('change',renderMic);
 if(mq.addEventListener)mq.addEventListener('change',renderMic);
-document.addEventListener('visibilitychange',()=>{if(document.hidden)stopMic()});
-window.addEventListener('pagehide',stopMic);
+// Leaving the page releases capture; simply toggling OFF does not.
+function closeMicSession(){++micRequest;releaseLiveMic();micBusy=false;micActive=false;adjustVolume();renderMic()}
+document.addEventListener('visibilitychange',()=>{if(document.hidden)closeMicSession()});
+window.addEventListener('pagehide',closeMicSession);
 renderMic();
 $('gear').onclick=()=>$('settings').classList.add('open');$('close').onclick=()=>$('settings').classList.remove('open');
 })();
 </script></body></html>
-
