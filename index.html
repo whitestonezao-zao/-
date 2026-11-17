@@ -127,7 +127,7 @@ body.mic-available .mic-panel{display:block}
 .mic-panel small{display:block;font-size:10px;margin-top:4px;color:#ddd}
 </style></head><body>
 <button class="settings-button" id="gear" aria-label="設定">⚙</button><main class="cabinet"><div class="section"></div><div class="section"><div class="controls"><div class="indicators"><div class="rectangle"></div><div class="lamp" id="bellLamp"></div></div><div class="ring"><button class="bigbutton blue" id="bellButton" aria-label="発車メロディ"></button></div></div></div><div class="section"><div class="controls"><div class="indicators"><div class="rectangle"></div><div class="lamp" id="doorLamp"></div></div><div class="ring"><button class="bigbutton red" id="doorButton" aria-label="乗降終了合図"></button></div></div></div><div class="section"></div><div class="section"></div></main>
-<aside class="mic-panel" id="micPanel" aria-label="肉声放送マイク"><button id="micButton" type="button" aria-pressed="false">OFF</button><small id="micStatus">マイク</small></aside><section class="dialog" id="settings"><div class="header"><h2>音声・モード設定</h2><button class="close" id="close">閉じる</button></div><div class="setting"><label for="layoutMode">表示モード</label><select id="layoutMode"><option value="auto">自動（画面幅で切り替え）</option><option value="pc">PC・iPadモード</option><option value="mobile">モバイルモード</option></select><p class="help">自動では画面幅600px以下をモバイル表示にします。手動選択も可能です。</p></div><div class="setting"><label for="mode">発車メロディのモード</label><select id="mode"><option value="normal">通常（停止までループ）</option><option value="tachikawa">立川式（停止操作後、現在のコーラス終わりで停止）</option></select></div><div class="setting"><label for="bellFile">発車メロディ</label><input type="file" id="bellFile" accept="audio/*,.mp3,.wav,.m4a,.ogg"><label class="file-pick" for="bellFile">ファイルを選択</label><p class="status" id="bellStatus">未登録</p></div><div class="setting"><label for="announceFile">発車放送</label><input type="file" id="announceFile" accept="audio/*,.mp3,.wav,.m4a,.ogg"><label class="file-pick" for="announceFile">ファイルを選択</label><p class="status" id="announceStatus">未登録（発車放送なし）</p><button type="button" class="close" id="clearAnnounce">発車放送なしにする</button></div><div class="setting"><label for="announceDelay">発車放送開始秒数</label><input type="number" id="announceDelay" min="0" max="3600" step="0.1" value="0" inputmode="decimal"> 秒<p class="help">発車メロディ開始から何秒後に発車放送を流すか設定します。</p></div><div class="setting"><label for="duck">発車放送中のメロディ音量（%）</label><input type="number" id="duck" min="0" max="100" step="1" value="30" inputmode="numeric"> %<p class="help">0〜100の数字を入力。放送が終わると100%に戻ります。</p></div><div class="setting" id="micSettings" style="display:none"><label for="micEnabled">肉声放送マイク（スマホ専用）</label><label style="font-weight:400"><input type="checkbox" id="micEnabled"> 肉声マイクを使用する（OFFでも放送ボタンは使えます）</label><label for="micSide">マイクパネルの位置</label><select id="micSide"><option value="left">左側</option><option value="right">右側</option></select><p class="help">肉声マイクをOFFにしても、放送ボタンで自動放送のミュートとメロディ減音ができます。肉声マイクをONにする場合はBluetoothまたは有線イヤホン等を接続してください。iOSではマイク起動によって音声の出力先が変わる場合があり、ブラウザから固定できません。ハウリングに注意し、最初は小音量でお試しください。使用する物理マイクの位置は指定できません。肉声マイク使用ONの場合、放送ボタンをOFFにしてもマイク接続は維持されます（音声出力のみミュート）。設定で使用OFFにするかページを離れると接続を終了します。</p></div><div class="setting"><label for="doorFile">乗降終了合図</label><input type="file" id="doorFile" accept="audio/*,.mp3,.wav,.m4a,.ogg"><label class="file-pick" for="doorFile">ファイルを選択</label><p class="status" id="doorStatus">未登録</p></div><p class="hint">設定と音声ファイルはこのブラウザに保存します。別の端末には自動で引き継がれません。ブラウザの保存データを消すと登録が失われる場合があります。</p><p class="version-label" aria-label="アプリのバージョン">Ver.27</p></section>
+<aside class="mic-panel" id="micPanel" aria-label="肉声放送マイク"><button id="micButton" type="button" aria-pressed="false">OFF</button><small id="micStatus">マイク</small></aside><section class="dialog" id="settings"><div class="header"><h2>音声・モード設定</h2><button class="close" id="close">閉じる</button></div><div class="setting"><label for="layoutMode">表示モード</label><select id="layoutMode"><option value="auto">自動（画面幅で切り替え）</option><option value="pc">PC・iPadモード</option><option value="mobile">モバイルモード</option></select><p class="help">自動では画面幅600px以下をモバイル表示にします。手動選択も可能です。</p></div><div class="setting"><label for="mode">発車メロディのモード</label><select id="mode"><option value="normal">通常（停止までループ）</option><option value="tachikawa">立川式（停止操作後、現在のコーラス終わりで停止）</option></select></div><div class="setting"><label for="bellFile">発車メロディ</label><input type="file" id="bellFile" accept="audio/*,.mp3,.wav,.m4a,.ogg"><label class="file-pick" for="bellFile">ファイルを選択</label><p class="status" id="bellStatus">未登録</p></div><div class="setting"><label for="announceFile">発車放送</label><input type="file" id="announceFile" accept="audio/*,.mp3,.wav,.m4a,.ogg"><label class="file-pick" for="announceFile">ファイルを選択</label><p class="status" id="announceStatus">未登録（発車放送なし）</p><button type="button" class="close" id="clearAnnounce">発車放送なしにする</button></div><div class="setting"><label for="announceDelay">発車放送開始秒数</label><input type="number" id="announceDelay" min="0" max="3600" step="0.1" value="0" inputmode="decimal"> 秒<p class="help">発車メロディ開始から何秒後に発車放送を流すか設定します。</p></div><div class="setting"><label for="duck">発車放送中のメロディ音量（%）</label><input type="number" id="duck" min="0" max="100" step="1" value="30" inputmode="numeric"> %<p class="help">0〜100の数字を入力。放送が終わると100%に戻ります。</p></div><div class="setting"><label for="masterVolume">アプリ全体の音量：<output id="masterVolumeValue">100%</output></label><input type="range" id="masterVolume" min="0" max="300" step="10" value="100" style="width:100%"><p class="help">メロディ・自動放送・乗降終了合図・肉声マイクを一括調整します。100%超は音割れに注意してください。</p></div><div class="setting"><label for="micVolume">マイク入力音量：<output id="micVolumeValue">200%</output></label><input type="range" id="micVolume" min="100" max="400" step="10" value="200" style="width:100%"><p class="help">肉声マイクだけの増幅率です。ハウリングを防ぐため小音量から試してください。</p></div><div class="setting" id="micSettings" style="display:none"><label for="micEnabled">肉声放送マイク（スマホ専用）</label><label style="font-weight:400"><input type="checkbox" id="micEnabled"> 肉声マイクを使用する（OFFでも放送ボタンは使えます）</label><label for="micSide">マイクパネルの位置</label><select id="micSide"><option value="left">左側</option><option value="right">右側</option></select><p class="help">肉声マイクをOFFにしても、放送ボタンで自動放送のミュートとメロディ減音ができます。肉声マイクをONにする場合はBluetoothまたは有線イヤホン等を接続してください。iOSではマイク起動によって音声の出力先が変わる場合があり、ブラウザから固定できません。ハウリングに注意し、最初は小音量でお試しください。使用する物理マイクの位置は指定できません。肉声マイク使用ONの場合、放送ボタンをOFFにしてもマイク接続は維持されます（音声出力のみミュート）。設定で使用OFFにするかページを離れると接続を終了します。</p></div><div class="setting"><label for="doorFile">乗降終了合図</label><input type="file" id="doorFile" accept="audio/*,.mp3,.wav,.m4a,.ogg"><label class="file-pick" for="doorFile">ファイルを選択</label><p class="status" id="doorStatus">未登録</p></div><p class="hint">設定と音声ファイルはこのブラウザに保存します。別の端末には自動で引き継がれません。ブラウザの保存データを消すと登録が失われる場合があります。</p><p class="version-label" aria-label="アプリのバージョン">Ver.28</p></section>
 <script>
 (()=>{'use strict';
 const layoutSelect=document.getElementById('layoutMode');
@@ -138,7 +138,7 @@ layoutSelect.addEventListener('change',()=>{localStorage.setItem('bell-layout-v6
 if(mq.addEventListener)mq.addEventListener('change',applyLayout);else mq.addListener(applyLayout);
 applyLayout();
 const $=id=>document.getElementById(id);const sounds={bell:new Audio(),announce:new Audio(),door:new Audio()};const urls={};let bellPlaying=false,doorHeld=false,starting=false,stopPending=false,activeMode="normal";let announcementTimer=null,announcementGeneration=0;
-let audioContext=null,bellGain=null,announceGain=null,announceBuffer=null,announceSource=null,announceStartAt=0,announceEndAt=0;
+let audioContext=null,bellGain=null,announceGain=null,masterGain=null,doorNode=null,announceBuffer=null,announceSource=null,announceStartAt=0,announceEndAt=0;
 let announceLoadVersion=0;
 let bellBuffer=null,bellLoadVersion=0,bellBufferSource=null;
 // Decode on a separate offline context so the playback AudioContext is born only on a user gesture.
@@ -176,10 +176,17 @@ function ensureAudioContext(){
   const AudioContextClass=window.AudioContext||window.webkitAudioContext;
   if(!AudioContextClass)return null;
   audioContext=new AudioContextClass();
+  // One common master bus for every audible source. Keep the original bell startup path.
+  masterGain=audioContext.createGain();
+  masterGain.gain.value=getMasterVolume();
+  masterGain.connect(audioContext.destination);
   bellGain=audioContext.createGain();
   const bellNode=audioContext.createMediaElementSource(sounds.bell);
-  bellNode.connect(bellGain).connect(audioContext.destination);
-  announceGain=audioContext.createGain();announceGain.connect(audioContext.destination);
+  bellNode.connect(bellGain).connect(masterGain);
+  announceGain=audioContext.createGain();announceGain.connect(masterGain);
+  // Route the held red-button sound through the same volume control.
+  doorNode=audioContext.createMediaElementSource(sounds.door);
+  doorNode.connect(masterGain);
   return audioContext;
 }
 // Ver.19: iOS SafariのWeb Audioが無音のまま待機する場合に備え、
@@ -428,6 +435,35 @@ door.addEventListener('pointerdown',e=>{unlockAudioForGesture();e.preventDefault
 const isPhone=/iPhone|iPod|Android.*Mobile/i.test(navigator.userAgent)&&!/iPad/i.test(navigator.userAgent);
 let micActive=false,micBusy=false,micStream=null,micSource=null,micGain=null,micEnabled=false,micRequest=0;
 const micPanel=$('micPanel'),micButton=$('micButton'),micStatus=$('micStatus');
+// Ver.28: Persist separate master and microphone gain controls.
+function savedPercent(key,defaultValue,min,max){
+  const raw=localStorage.getItem(key);
+  const n=raw===null?defaultValue:Number(raw);
+  return Number.isFinite(n)?Math.min(max,Math.max(min,Math.round(n/10)*10)):defaultValue;
+}
+let masterPercent=savedPercent('bell-master-volume-v28',100,0,300);
+let micPercent=savedPercent('bell-mic-volume-v28',200,100,400);
+function getMasterVolume(){return masterPercent/100}
+function getMicVolume(){return micPercent/100}
+function refreshVolumeControls(){
+  $('masterVolume').value=String(masterPercent);
+  $('masterVolumeValue').textContent=masterPercent+'%';
+  $('micVolume').value=String(micPercent);
+  $('micVolumeValue').textContent=micPercent+'%';
+}
+$('masterVolume').addEventListener('input',()=>{
+  masterPercent=Number($('masterVolume').value);
+  localStorage.setItem('bell-master-volume-v28',String(masterPercent));
+  refreshVolumeControls();
+  if(masterGain&&audioContext)masterGain.gain.setTargetAtTime(getMasterVolume(),audioContext.currentTime,0.012);
+});
+$('micVolume').addEventListener('input',()=>{
+  micPercent=Number($('micVolume').value);
+  localStorage.setItem('bell-mic-volume-v28',String(micPercent));
+  refreshVolumeControls();setMicOutput();
+});
+refreshVolumeControls();
+
 function renderMic(){
   document.body.classList.toggle('mic-available',isPhone);
   micPanel.classList.toggle('right',$('micSide').value==='right');
@@ -445,7 +481,7 @@ function setMicOutput(){
   if(micGain&&audioContext){
     const now=audioContext.currentTime;
     micGain.gain.cancelScheduledValues(now);
-    micGain.gain.setValueAtTime(micActive&&micEnabled?1:0,now);
+    micGain.gain.setValueAtTime(micActive&&micEnabled?getMicVolume():0,now);
   }
 }
 function releaseLiveMic(){
@@ -473,8 +509,8 @@ async function startLiveMic(request){
     if(!ctx){stream.getTracks().forEach(t=>t.stop());throw new Error('Web Audio unavailable')}
     const source=ctx.createMediaStreamSource(stream);
     const gain=ctx.createGain();
-    gain.gain.value=micActive?1:0;
-    source.connect(gain).connect(ctx.destination);
+    gain.gain.value=micActive?getMicVolume():0;
+    source.connect(gain).connect(masterGain);
     micStream=stream;micSource=source;micGain=gain;
     stream.getAudioTracks().forEach(t=>t.addEventListener('ended',()=>{
       if(micStream===stream){releaseLiveMic();micBusy=false;renderMic()}
