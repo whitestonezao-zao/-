@@ -176,6 +176,7 @@ applyFlip();const sounds={bell:new Audio(),announce:new Audio(),door:new Audio()
 let audioContext=null,bellGain=null,announceGain=null,masterGain=null,doorNode=null,announceBuffer=null,announceSource=null,announceStartAt=0,announceEndAt=0;
 let announceLoadVersion=0;
 let bellBuffer=null,bellLoadVersion=0,bellBufferSource=null;
+let doorBuffer=null,doorLoadVersion=0,doorBufferSource=null;
 // Decode on a separate offline context so the playback AudioContext is born only on a user gesture.
 function makeDecoder(){
   const Offline=window.OfflineAudioContext||window.webkitOfflineAudioContext;
@@ -193,6 +194,28 @@ async function prepareBellBuffer(blob){
     const buffer=await ctx.decodeAudioData(bytes);
     if(version===bellLoadVersion)bellBuffer=buffer;
   }catch(e){console.warn('メロディのループ用デコードに失敗したため標準再生を使います',e)}
+}
+// Decode the short boarding-completion signal ahead of time. Starting an already
+// decoded buffer on pointerdown avoids a seek/play interruption at the beginning.
+async function prepareDoorBuffer(blob){
+  const version=++doorLoadVersion;
+  doorBuffer=null;
+  if(!blob)return;
+  try{
+    const ctx=makeDecoder();
+    if(!ctx)return;
+    const bytes=await blob.arrayBuffer();
+    const decoded=await ctx.decodeAudioData(bytes);
+    if(version===doorLoadVersion)doorBuffer=decoded;
+  }catch(e){console.warn('乗降終了合図の事前読み込みに失敗。通常再生を使用します',e)}
+}
+function stopDoorBuffer(){
+  if(!doorBufferSource)return;
+  const source=doorBufferSource;
+  doorBufferSource=null;
+  source.onended=null;
+  try{source.stop()}catch(e){}
+  try{source.disconnect()}catch(e){}
 }
 function stopBellBuffer(){
   if(!bellBufferSource)return;
@@ -296,7 +319,7 @@ function db(){return new Promise((resolve,reject)=>{const r=indexedDB.open('depa
 async function storeFile(key,file){const d=await db();return new Promise((resolve,reject)=>{const t=d.transaction('audio','readwrite');t.objectStore('audio').put({blob:file,name:file.name},key);t.oncomplete=resolve;t.onerror=()=>reject(t.error)})}
 async function deleteFile(key){const d=await db();return new Promise((resolve,reject)=>{const t=d.transaction('audio','readwrite');t.objectStore('audio').delete(key);t.oncomplete=resolve;t.onerror=()=>reject(t.error)})}
 async function readFile(key){const d=await db();return new Promise((resolve,reject)=>{const r=d.transaction('audio','readonly').objectStore('audio').get(key);r.onsuccess=()=>resolve(r.result);r.onerror=()=>reject(r.error)})}
-function setSource(key,blob,name){sounds[key].pause();if(urls[key])URL.revokeObjectURL(urls[key]);urls[key]=URL.createObjectURL(blob);sounds[key].src=urls[key];sounds[key].load();$(key+'Status').textContent='登録済み：'+name;if(key==='bell'){stopBellBuffer();endBell();prepareBellBuffer(blob)}if(key==='door')stopDoor();if(key==='announce'){clearScheduledAnnouncement();fallbackAnnouncementActive=false;prepareAnnouncement(blob)}}
+function setSource(key,blob,name){sounds[key].pause();if(urls[key])URL.revokeObjectURL(urls[key]);urls[key]=URL.createObjectURL(blob);sounds[key].src=urls[key];sounds[key].load();$(key+'Status').textContent='登録済み：'+name;if(key==='bell'){stopBellBuffer();endBell();prepareBellBuffer(blob)}if(key==='door'){stopDoor();prepareDoorBuffer(blob)}if(key==='announce'){clearScheduledAnnouncement();fallbackAnnouncementActive=false;prepareAnnouncement(blob)}}
 $('clearAnnounce').addEventListener('click',async()=>{try{await deleteFile('announce');clearScheduledAnnouncement();fallbackAnnouncementActive=false;++announceLoadVersion;announceBuffer=null;sounds.announce.pause();sounds.announce.removeAttribute('src');sounds.announce.load();if(urls.announce){URL.revokeObjectURL(urls.announce);delete urls.announce} $('announceFile').value='';$('announceStatus').textContent='未登録（発車放送なし）';adjustVolume()}catch(e){alert('発車放送の解除に失敗しました。もう一度お試しください。')}});
 for(const key of ['bell','announce','door']){$(key+'File').addEventListener('change',async e=>{const file=e.target.files?.[0];if(!file)return;try{await storeFile(key,file);setSource(key,file,file.name)}catch(err){alert('音声を保存できませんでした。容量などを確認してください。')}e.target.value=''})}
 (async()=>{for(const key of ['bell','announce','door']){try{const f=await readFile(key);if(f)setSource(key,f.blob,f.name)}catch(e){}}})();
@@ -379,8 +402,9 @@ function adjustVolume(){
   if(bellGain){
     const now=audioContext.currentTime;
     if(announceSource){
-      // マイク切り替え時にも減音の予約を更新する。
-      if(micActive||scheduledDuckSource!==announceSource)scheduleDuckForWeb(announceSource);
+      // マイクOFF直後も必ず予約を組み直す。放送開始前は通常音量へ戻し、
+      // 放送開始時刻からのみ設定音量に下げる。
+      scheduleDuckForWeb(announceSource);
     }else{
       bellGain.gain.cancelScheduledValues(now);
       bellGain.gain.setValueAtTime(target,now);
@@ -462,8 +486,30 @@ $('bellButton').addEventListener('click',()=>{
 sounds.bell.addEventListener('ended',endBell);sounds.announce.addEventListener('play',()=>{fallbackAnnouncementActive=true;adjustVolume()});sounds.announce.addEventListener('pause',()=>{fallbackAnnouncementActive=false;adjustVolume()});sounds.announce.addEventListener('ended',()=>{fallbackAnnouncementActive=false;adjustVolume()});sounds.announce.addEventListener('error',()=>{fallbackAnnouncementActive=false;adjustVolume()});
 $('announceDelay').addEventListener('change',()=>{const v=getDelay();$('announceDelay').value=String(v);localStorage.setItem('bell-announce-delay-v7',String(v))});$('duck').addEventListener('input',()=>{const v=Number($('duck').value);if(Number.isFinite(v)&&v>=0&&v<=100){localStorage.setItem('bell-duck-v3',String(v));if(announceSource)scheduleDuckForWeb(announceSource);adjustVolume()}});$('mode').addEventListener('change',()=>{localStorage.setItem('bell-mode-v3',getMode());/* 再生中のモードは次回の開始から反映 */});
 const savedDelay=localStorage.getItem('bell-announce-delay-v7');if(savedDelay!==null&&Number.isFinite(Number(savedDelay))&&Number(savedDelay)>=0&&Number(savedDelay)<=3600)$('announceDelay').value=savedDelay;const savedMode=localStorage.getItem('bell-mode-v3');if(['normal','tachikawa'].includes(savedMode))$('mode').value=savedMode;const savedDuck=localStorage.getItem('bell-duck-v3');if(savedDuck!==null&&Number(savedDuck)>=0&&Number(savedDuck)<=100)$('duck').value=savedDuck;
-const door=$('doorButton');function stopDoor(){doorHeld=false;sounds.door.pause();if(sounds.door.src)try{sounds.door.currentTime=0}catch(e){}$('doorLamp').classList.remove('lit')}
-door.addEventListener('pointerdown',e=>{unlockAudioForGesture();e.preventDefault();if(doorHeld)return;if(!sounds.door.src){alert('先に設定から乗降終了合図を登録してください。');return}doorHeld=true;$('doorLamp').classList.add('lit');sounds.door.currentTime=0;door.setPointerCapture?.(e.pointerId);sounds.door.play().catch(()=>stopDoor())});for(const event of ['pointerup','pointercancel','lostpointercapture'])door.addEventListener(event,stopDoor);sounds.door.addEventListener('ended',stopDoor);window.addEventListener('blur',stopDoor);document.addEventListener('visibilitychange',()=>{if(document.hidden)stopDoor()});
+const door=$('doorButton');function stopDoor(){doorHeld=false;stopDoorBuffer();sounds.door.pause();if(sounds.door.src)try{sounds.door.currentTime=0}catch(e){}$('doorLamp').classList.remove('lit')}
+door.addEventListener('pointerdown',e=>{
+  e.preventDefault();
+  if(doorHeld)return;
+  if(!sounds.door.src){alert('先に設定から乗降終了合図を登録してください。');return}
+  doorHeld=true;
+  $('doorLamp').classList.add('lit');
+  door.setPointerCapture?.(e.pointerId);
+  const ctx=unlockAudioForGesture();
+  if(ctx&&doorBuffer){
+    try{
+      const source=ctx.createBufferSource();
+      source.buffer=doorBuffer;
+      source.connect(masterGain);
+      doorBufferSource=source;
+      source.onended=()=>{if(doorBufferSource===source){doorBufferSource=null;stopDoor()}};
+      source.start(0);
+      return;
+    }catch(err){console.warn('合図のバッファ再生に失敗。通常再生を使用します',err);stopDoorBuffer()}
+  }
+  // Unsupported/undecoded formats retain the original press-and-hold behavior.
+  try{sounds.door.currentTime=0}catch(e){}
+  sounds.door.play().catch(()=>stopDoor());
+});for(const event of ['pointerup','pointercancel','lostpointercapture'])door.addEventListener(event,stopDoor);sounds.door.addEventListener('ended',stopDoor);window.addEventListener('blur',stopDoor);document.addEventListener('visibilitychange',()=>{if(document.hidden)stopDoor()});
 // Ver.26: Smartphone-only announcement override button.
 // The setting controls LIVE microphone capture, not whether the override button exists.
 // No audioSession type changes: they could disturb Bluetooth routing when toggled.
