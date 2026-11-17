@@ -139,16 +139,17 @@ body.flip-screen.layout-mobile .dialog {transform:translateX(-50%) rotate(180deg
 const layoutSelect=document.getElementById('layoutMode');
 const mq=window.matchMedia('(max-width: 600px)');
 function applyLayout(){const chosen=layoutSelect.value;document.body.classList.toggle('layout-mobile',chosen==='mobile'||(chosen==='auto'&&mq.matches));}
-const flipScreen=$('flipScreen');
-flipScreen.checked=localStorage.getItem('bell-flip-screen-v28')==='1';
-function applyFlip(){document.body.classList.toggle('flip-screen',flipScreen.checked)}
-flipScreen.addEventListener('change',()=>{localStorage.setItem('bell-flip-screen-v28',flipScreen.checked?'1':'0');applyFlip()});
-applyFlip();
+
 const savedLayout=localStorage.getItem('bell-layout-v6');if(['auto','pc','mobile'].includes(savedLayout))layoutSelect.value=savedLayout;
 layoutSelect.addEventListener('change',()=>{localStorage.setItem('bell-layout-v6',layoutSelect.value);applyLayout()});
 if(mq.addEventListener)mq.addEventListener('change',applyLayout);else mq.addListener(applyLayout);
 applyLayout();
-const $=id=>document.getElementById(id);const sounds={bell:new Audio(),announce:new Audio(),door:new Audio()};const urls={};let bellPlaying=false,doorHeld=false,starting=false,stopPending=false,activeMode="normal";let announcementTimer=null,announcementGeneration=0;
+const $=id=>document.getElementById(id);
+const flipScreen=$('flipScreen');
+flipScreen.checked=localStorage.getItem('bell-flip-screen-v28')==='1';
+function applyFlip(){document.body.classList.toggle('flip-screen',flipScreen.checked)}
+flipScreen.addEventListener('change',()=>{localStorage.setItem('bell-flip-screen-v28',flipScreen.checked?'1':'0');applyFlip()});
+applyFlip();const sounds={bell:new Audio(),announce:new Audio(),door:new Audio()};const urls={};let bellPlaying=false,doorHeld=false,starting=false,stopPending=false,activeMode="normal";let announcementTimer=null,announcementGeneration=0;
 let audioContext=null,bellGain=null,announceGain=null,masterGain=null,doorNode=null,announceBuffer=null,announceSource=null,announceStartAt=0,announceEndAt=0;
 let announceLoadVersion=0;
 let bellBuffer=null,bellLoadVersion=0,bellBufferSource=null;
