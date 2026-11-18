@@ -632,8 +632,11 @@ $('micEnabled').addEventListener('change',()=>{
   if(!micEnabled){
     resetMasterVolume();
     ++micRequest;releaseLiveMic();micBusy=false;
-  }else if(micActive){
-    unlockAudioForGesture();startLiveMic(micRequest);
+  }else{
+    // Start the capture session as soon as the user enables live microphone use.
+    // This allows iOS/Bluetooth audio routing to settle before a broadcast starts.
+    unlockAudioForGesture();
+    startLiveMic(micRequest);
   }
   setMicOutput();renderMic();
 });
@@ -645,6 +648,6 @@ function closeMicSession(){++micRequest;releaseLiveMic();micBusy=false;micActive
 document.addEventListener('visibilitychange',()=>{if(document.hidden)closeMicSession()});
 window.addEventListener('pagehide',closeMicSession);
 renderMic();
-$('gear').onclick=()=>$('settings').classList.add('open');$('close').onclick=()=>$('settings').classList.remove('open');
+$('gear').onclick=()=>{ $('settings').classList.add('open'); if(micEnabled&&!micStream&&!micBusy){unlockAudioForGesture();startLiveMic(micRequest)} };$('close').onclick=()=>$('settings').classList.remove('open');
 })();
 </script></body></html>
