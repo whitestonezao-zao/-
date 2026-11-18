@@ -559,7 +559,7 @@ function renderMic(){
   micButton.setAttribute('aria-pressed',String(micActive));
   // Even while the OS asks for microphone permission, the user can switch OFF.
   micButton.disabled=false;
-  micStatus.textContent=micBusy?'マイク接続中':micActive?(micEnabled?'肉声放送':'放送操作'):(micEnabled&&micStream?'マイク待機中':'放送');
+  micStatus.textContent='マイク';
 }
 // Ver.27: Keep the microphone capture session alive between broadcast ON/OFF toggles.
 // Only the microphone's output gain changes; this avoids repeated getUserMedia/track.stop
@@ -651,3 +651,4 @@ renderMic();
 $('gear').onclick=()=>{ $('settings').classList.add('open'); if(micEnabled&&!micStream&&!micBusy){unlockAudioForGesture();startLiveMic(micRequest)} };$('close').onclick=()=>$('settings').classList.remove('open');
 })();
 </script></body></html>
+
