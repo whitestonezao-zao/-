@@ -154,23 +154,9 @@ body.flip-screen .mic-panel.right {
 body.flip-screen .settings-button {top:auto;right:auto;bottom:max(12px,env(safe-area-inset-bottom));left:12px;transform:rotate(180deg)}
 body.flip-screen .mic-panel {top:auto;bottom:24%;left:auto;right:0;transform:rotate(180deg);border-radius:0 10px 10px 0}
 body.flip-screen .mic-panel.right {right:auto;left:0;border-radius:10px 0 0 10px}
-
-/* Ver.29: Station-specific selection */
-.station-hidden{display:none!important}
-.station-select-btn{padding:11px 16px;background:#343434;color:#fff;border:1px solid #999;border-radius:7px;cursor:pointer}
-.station-selection{margin-top:12px;font-size:14px;line-height:1.6;color:#d6f7b2}
-.station-overlay{display:none;position:fixed;inset:0;background:#171717;z-index:8;overflow-y:auto;padding:24px;color:#fff}
-.station-overlay.open{display:block}
-.station-overlay .station-list{display:grid;gap:7px;margin-top:12px}
-.station-overlay .station-item{padding:12px;text-align:left;background:#333;border:1px solid #777;color:#fff;border-radius:7px;cursor:pointer}
-.station-overlay .station-item:disabled{color:#888;background:#252525;border-color:#444;cursor:not-allowed}
-.station-overlay .station-item.selected{border-color:#b5f34a}
-.station-overlay .station-back{margin-top:18px}
-.station-overlay .station-caption{font-size:13px;color:#aaa}
-body.flip-screen .station-overlay{transform:rotate(180deg)}
 </style></head><body>
 <button class="settings-button" id="gear" aria-label="設定">⚙</button><main class="cabinet"><div class="section"></div><div class="section"><div class="controls"><div class="indicators"><div class="rectangle"></div><div class="lamp" id="bellLamp"></div></div><div class="ring"><button class="bigbutton blue" id="bellButton" aria-label="発車メロディ"></button></div></div></div><div class="section"><div class="controls"><div class="indicators"><div class="rectangle"></div><div class="lamp" id="doorLamp"></div></div><div class="ring"><button class="bigbutton red" id="doorButton" aria-label="乗降終了合図"></button></div></div></div><div class="section"></div><div class="section"></div></main>
-<aside class="mic-panel" id="micPanel" aria-label="肉声放送マイク"><button id="micButton" type="button" aria-pressed="false">OFF</button><small id="micStatus">マイク</small></aside><section class="dialog" id="settings"><div class="header"><h2>音声・モード設定</h2><button class="close" id="close">閉じる</button></div><div class="setting"><label for="layoutMode">表示モード</label><select id="layoutMode"><option value="auto">自動（画面幅で切り替え）</option><option value="pc">PC・iPadモード</option><option value="mobile">モバイルモード</option></select><p class="help">自動では画面幅600px以下をモバイル表示にします。手動選択も可能です。</p></div><div class="setting"><label for="selectionMode">選択モード</label><select id="selectionMode"><option value="free">自由選択モード</option><option value="station">駅別選択モード</option></select></div><div class="setting station-hidden" id="stationSetting"><label>駅選択</label><button type="button" class="station-select-btn" id="openStation">駅を選択</button><p class="station-selection" id="stationSelection">駅・番線を選択してください。</p><p class="help" id="stationAnnouncementStatus"></p></div><div class="setting" data-free-only><label for="bellFile">発車メロディ</label><input type="file" id="bellFile" accept="audio/*,.mp3,.wav,.m4a,.ogg"><label class="file-pick" for="bellFile">ファイルを選択</label><p class="status" id="bellStatus">未登録</p></div><div class="setting" data-free-only><label for="announceFile">発車放送</label><input type="file" id="announceFile" accept="audio/*,.mp3,.wav,.m4a,.ogg"><label class="file-pick" for="announceFile">ファイルを選択</label><p class="status" id="announceStatus">未登録（発車放送なし）</p><button type="button" class="close" id="clearAnnounce">発車放送なしにする</button></div><div class="setting" data-free-only><label for="announceDelay">発車放送開始秒数</label><input type="number" id="announceDelay" min="0" max="3600" step="0.1" value="0" inputmode="decimal"> 秒<p class="help">発車メロディ開始から何秒後に発車放送を流すか設定します。</p></div><div class="setting" data-free-only><label for="duck">発車放送中のメロディ音量（%）</label><input type="number" id="duck" min="0" max="100" step="1" value="30" inputmode="numeric"> %<p class="help">0〜100の数字を入力。放送が終わると100%に戻ります。</p></div><div class="setting"><label for="doorFile">乗降終了合図</label><input type="file" id="doorFile" accept="audio/*,.mp3,.wav,.m4a,.ogg"><label class="file-pick" for="doorFile">ファイルを選択</label><p class="status" id="doorStatus">未登録</p></div><div class="setting"><label for="masterVolume">アプリ全体の音量：<output id="masterVolumeValue">100%</output></label><input type="range" id="masterVolume" min="0" max="300" step="10" value="100" style="width:100%"><p class="help">メロディ・自動放送・乗降終了合図・肉声マイクを一括調整します。100%超は音割れに注意してください。</p></div><div class="setting"><label for="micVolume">マイク出力音量：<output id="micVolumeValue">200%</output></label><input type="range" id="micVolume" min="100" max="500" step="10" value="200" style="width:100%"><p class="help">スピーカーへ出力する肉声マイクの音量を調整します。ハウリングを防ぐため小音量から試してください。</p></div><div class="setting" id="micSettings" style="display:none"><label for="micEnabled">肉声放送マイク（スマホ専用）</label><label style="font-weight:400"><input type="checkbox" id="micEnabled"> 肉声マイクを使用する（OFFでも放送ボタンは使えます）</label><label for="micSide">マイクパネルの位置</label><select id="micSide"><option value="left">左側</option><option value="right">右側</option></select><p class="help">肉声マイクをOFFにしても、放送ボタンで自動放送のミュートとメロディ減音ができます。肉声マイクをONにする場合はBluetoothまたは有線イヤホン等を接続してください。iOSではマイク起動によって音声の出力先が変わる場合があり、ブラウザから固定できません。ハウリングに注意し、最初は小音量でお試しください。設定で使用OFFにするかページを離れると接続を終了します。</p></div><p class="hint">設定と音声ファイルはこのブラウザに保存します。別の端末には自動で引き継がれません。ブラウザの保存データを消すと登録が失われる場合があります。</p><div class="setting"><label for="flipScreen">画面の上下反転</label><label style="font-weight:400"><input type="checkbox" id="flipScreen"> 画面を180°回転する</label></div><p class="version-label" aria-label="アプリのバージョン">Ver.29</p></section><section class="station-overlay" id="stationOverlay" aria-label="駅選択"><div class="header"><h2 id="stationOverlayTitle">路線選択</h2><button class="close" id="stationOverlayClose">閉じる</button></div><p class="station-caption" id="stationOverlayHelp"></p><div class="station-list" id="stationOverlayList"></div><button type="button" class="close station-back" id="stationOverlayBack" style="display:none">戻る</button></section>
+<aside class="mic-panel" id="micPanel" aria-label="肉声放送マイク"><button id="micButton" type="button" aria-pressed="false">OFF</button><small id="micStatus">マイク</small></aside><section class="dialog" id="settings"><div class="header"><h2>音声・モード設定</h2><button class="close" id="close">閉じる</button></div><div class="setting"><label for="layoutMode">表示モード</label><select id="layoutMode"><option value="auto">自動（画面幅で切り替え）</option><option value="pc">PC・iPadモード</option><option value="mobile">モバイルモード</option></select><p class="help">自動では画面幅600px以下をモバイル表示にします。手動選択も可能です。</p></div><div class="setting"><label for="mode">発車メロディのモード</label><select id="mode"><option value="normal">通常（停止までループ）</option><option value="tachikawa">立川式（停止操作後、現在のコーラス終わりで停止）</option></select></div><div class="setting"><label for="bellFile">発車メロディ</label><input type="file" id="bellFile" accept="audio/*,.mp3,.wav,.m4a,.ogg"><label class="file-pick" for="bellFile">ファイルを選択</label><p class="status" id="bellStatus">未登録</p></div><div class="setting"><label for="announceFile">発車放送</label><input type="file" id="announceFile" accept="audio/*,.mp3,.wav,.m4a,.ogg"><label class="file-pick" for="announceFile">ファイルを選択</label><p class="status" id="announceStatus">未登録（発車放送なし）</p><button type="button" class="close" id="clearAnnounce">発車放送なしにする</button></div><div class="setting"><label for="announceDelay">発車放送開始秒数</label><input type="number" id="announceDelay" min="0" max="3600" step="0.1" value="0" inputmode="decimal"> 秒<p class="help">発車メロディ開始から何秒後に発車放送を流すか設定します。</p></div><div class="setting"><label for="duck">発車放送中のメロディ音量（%）</label><input type="number" id="duck" min="0" max="100" step="1" value="30" inputmode="numeric"> %<p class="help">0〜100の数字を入力。放送が終わると100%に戻ります。</p></div><div class="setting"><label for="doorFile">乗降終了合図</label><input type="file" id="doorFile" accept="audio/*,.mp3,.wav,.m4a,.ogg"><label class="file-pick" for="doorFile">ファイルを選択</label><p class="status" id="doorStatus">未登録</p></div><div class="setting"><label for="masterVolume">アプリ全体の音量：<output id="masterVolumeValue">100%</output></label><input type="range" id="masterVolume" min="0" max="300" step="10" value="100" style="width:100%"><p class="help">メロディ・自動放送・乗降終了合図・肉声マイクを一括調整します。100%超は音割れに注意してください。</p></div><div class="setting"><label for="micVolume">マイク出力音量：<output id="micVolumeValue">200%</output></label><input type="range" id="micVolume" min="100" max="500" step="10" value="200" style="width:100%"><p class="help">スピーカーへ出力する肉声マイクの音量を調整します。ハウリングを防ぐため小音量から試してください。</p></div><div class="setting" id="micSettings" style="display:none"><label for="micEnabled">肉声放送マイク（スマホ専用）</label><label style="font-weight:400"><input type="checkbox" id="micEnabled"> 肉声マイクを使用する（OFFでも放送ボタンは使えます）</label><label for="micSide">マイクパネルの位置</label><select id="micSide"><option value="left">左側</option><option value="right">右側</option></select><p class="help">肉声マイクをOFFにしても、放送ボタンで自動放送のミュートとメロディ減音ができます。肉声マイクをONにする場合はBluetoothまたは有線イヤホン等を接続してください。iOSではマイク起動によって音声の出力先が変わる場合があり、ブラウザから固定できません。ハウリングに注意し、最初は小音量でお試しください。設定で使用OFFにするかページを離れると接続を終了します。</p></div><p class="hint">設定と音声ファイルはこのブラウザに保存します。別の端末には自動で引き継がれません。ブラウザの保存データを消すと登録が失われる場合があります。</p><div class="setting"><label for="flipScreen">画面の上下反転</label><label style="font-weight:400"><input type="checkbox" id="flipScreen"> 画面を180°回転する</label></div><p class="version-label" aria-label="アプリのバージョン">Ver.28</p></section>
 <script>
 (()=>{'use strict';
 const layoutSelect=document.getElementById('layoutMode');
@@ -336,119 +322,9 @@ async function readFile(key){const d=await db();return new Promise((resolve,reje
 function setSource(key,blob,name){sounds[key].pause();if(urls[key])URL.revokeObjectURL(urls[key]);urls[key]=URL.createObjectURL(blob);sounds[key].src=urls[key];sounds[key].load();$(key+'Status').textContent='登録済み：'+name;if(key==='bell'){stopBellBuffer();endBell();prepareBellBuffer(blob)}if(key==='door'){stopDoor();prepareDoorBuffer(blob)}if(key==='announce'){clearScheduledAnnouncement();fallbackAnnouncementActive=false;prepareAnnouncement(blob)}}
 $('clearAnnounce').addEventListener('click',async()=>{try{await deleteFile('announce');clearScheduledAnnouncement();fallbackAnnouncementActive=false;++announceLoadVersion;announceBuffer=null;sounds.announce.pause();sounds.announce.removeAttribute('src');sounds.announce.load();if(urls.announce){URL.revokeObjectURL(urls.announce);delete urls.announce} $('announceFile').value='';$('announceStatus').textContent='未登録（発車放送なし）';adjustVolume()}catch(e){alert('発車放送の解除に失敗しました。もう一度お試しください。')}});
 for(const key of ['bell','announce','door']){$(key+'File').addEventListener('change',async e=>{const file=e.target.files?.[0];if(!file)return;try{await storeFile(key,file);setSource(key,file,file.name)}catch(err){alert('音声を保存できませんでした。容量などを確認してください。')}e.target.value=''})}
-(async()=>{for(const key of ['bell','announce','door']){try{const f=await readFile(key);if(f){if(key==='door'||selectionMode==='free')setSource(key,f.blob,f.name)}}catch(e){}}})();
-function getMode(){return selectionMode==='station' && currentStationConfig && selectedStation && selectedStation.line==='東北新幹線' && ['新花巻','北上'].includes(selectedStation.station)?'tachikawa':'normal'}function getDuck(){if(selectionMode==='station'&&currentStationConfig)return (currentStationConfig.duck??100)/100;let v=Number($('duck').value);return Number.isFinite(v)?Math.min(100,Math.max(0,v))/100:0.3}
-function getDelay(){if(selectionMode==='station'&&currentStationConfig)return currentStationConfig.delay??0;const v=Number($('announceDelay').value);return Number.isFinite(v)?Math.min(3600,Math.max(0,v)):0}
-
-// Ver.29: Preconfigured line/station/platform mapping, separate from free-mode files.
-const STATION_DB = {"東北新幹線":{"東京":{"20":{"melody":"JRE-IKST-101-01.mp3","announcement":null},"21":{"melody":"JRE-IKST-xxx-xx（東京21番）.mp3","announcement":null},"22":{"melody":"JRE-IKST-102-01.mp3","announcement":null},"23":{"melody":"JRE-IKST-105-01.mp3","announcement":null}},"上野":{"19":{"melody":"JRE-IKST-102-01.mp3","announcement":null},"20":{"melody":"JRE-IKST-101-01.mp3","announcement":null},"21":{"melody":"JRE-IKST-101-02.mp3","announcement":null},"22":{"melody":"JRE-IKST-102-02.mp3","announcement":null}},"大宮":{"13":{"melody":"JRE-IKST-105-02.mp3","announcement":null},"14":{"melody":"JRE-IKST-105-02.mp3","announcement":"大宮 やまびこ62号発車放送.mp3","delay":6,"duck":30},"15":{"melody":"JRE-IKST-xxx-xx（大宮15,16番線）.mp3","announcement":null},"16":{"melody":"JRE-IKST-xxx-xx（大宮15,16番線）.mp3","announcement":null},"17":{"melody":"JRE-IKST-101-xx.mp3","announcement":null}},"小山":{"1":{"melody":"JRE-IKST-101-01.mp3","announcement":null},"4":{"melody":"JRE-IKST-101-02.mp3","announcement":null},"5":{"melody":"JRE-IKST-101-02.mp3","announcement":null}},"宇都宮":{"1":{"melody":"JRE-IKST-101-01.mp3","announcement":"宇都宮 なすの271号発車放送.mp3","delay":6,"duck":90},"4":{"melody":"JRE-IKST-101-02.mp3","announcement":null}},"那須塩原":{"1":{"melody":null,"announcement":null,"disabled":true},"4":{"melody":null,"announcement":null,"disabled":true},"5":{"melody":null,"announcement":null,"disabled":true}},"新白河":{"1":{"melody":null,"announcement":null,"disabled":true},"4":{"melody":null,"announcement":null,"disabled":true}},"郡山":{"11":{"melody":"キセキ.mp3","announcement":null},"12":{"melody":"キセキ.mp3","announcement":"郡山 やまびこ67号発車放送.mp3","delay":6,"duck":100},"13":{"melody":"キセキ.mp3","announcement":null}},"福島":{"11":{"melody":"栄冠は君に輝く.mp3","announcement":null},"12":{"melody":"栄冠は君に輝く.mp3","announcement":null},"13":{"melody":"栄冠は君に輝く.mp3","announcement":"福島 やまびこ67号.mp3","delay":5,"duck":20},"14":{"melody":"栄冠は君に輝く.mp3","announcement":null}},"白石蔵王":{"1":{"melody":"白石市民歌.mp3","announcement":"白石蔵王 やまびこ67号発車放送.mp3","delay":6,"duck":40},"2":{"melody":"白石音頭.mp3","announcement":null},"3":{"melody":"白石音頭.mp3","announcement":null}},"仙台":{"11":{"melody":null,"announcement":null,"disabled":true},"12":{"melody":null,"announcement":null,"disabled":true},"13":{"melody":null,"announcement":null,"disabled":true},"14":{"melody":null,"announcement":null,"disabled":true}},"古川":{"11":{"melody":null,"announcement":null,"disabled":true},"12":{"melody":null,"announcement":null,"disabled":true}},"くりこま高原":{"11":{"melody":"JRE-IKST-101-02.mp3","announcement":"くりこま高原 やまびこ52号発車放送.mp3","delay":6,"duck":40},"12":{"melody":"JRE-IKST-101-01.mp3","announcement":null}},"一ノ関":{"11":{"melody":"夕暮れ時はさびしそう.mp3","announcement":null},"12":{"melody":"夕暮れ時はさびしそう.mp3","announcement":"一ノ関 やまびこ62号.mp3","delay":6,"duck":30}},"水沢江刺":{"1":{"melody":"君は天然色 Aメロ.mp3","announcement":"水沢江刺 やまびこ67号.mp3","delay":6,"duck":50},"2":{"melody":"君は天然色 サビ.mp3","announcement":"水沢江刺 やまびこ62号.mp3","delay":6,"duck":50}},"北上":{"11":{"melody":"JRE-IKST-101-01.mp3","announcement":null},"12":{"melody":"JRE-IKST-101-01.mp3","announcement":null},"13":{"melody":"JRE-IKST-101-02.mp3","announcement":null}},"新花巻":{"1":{"melody":"星めぐりの歌 チェロver.mp3","announcement":"新花巻 やまびこ67号.mp3","delay":6,"duck":100},"2":{"melody":"星めぐりの歌 鉄琴ver.mp3","announcement":"新花巻 やまびこ62号.mp3","delay":6,"duck":100}},"盛岡":{"11":{"melody":"ダイジョウブ ギターver.mp3","announcement":"盛岡 はやぶさこまち18号.mp3","delay":5,"duck":25},"12":{"melody":"ダイジョウブ ギターver.mp3","announcement":null},"13":{"melody":"ダイジョウブ ピアノ・ヴァイオリンver.mp3","announcement":null},"14":{"melody":"ダイジョウブ ピアノ・ヴァイオリンver.mp3","announcement":null}},"いわて沼宮内":{"1":{"melody":"JRE-IKST-101-01.mp3","announcement":null},"2":{"melody":"JRE-IKST-101-02.mp3","announcement":null}},"二戸":{"1":{"melody":"JRE-IKST-101-02.mp3","announcement":null},"2":{"melody":"JRE-IKST-101-01.mp3","announcement":null}},"八戸":{"11":{"melody":"八戸小唄 三味線ver.mp3","announcement":null},"12":{"melody":"八戸小唄 三味線ver.mp3","announcement":null},"13":{"melody":"八戸小唄 シンセサイザーver.mp3","announcement":null},"14":{"melody":"八戸小唄 シンセサイザーver.mp3","announcement":null}},"七戸十和田":{"1":{"melody":"JRE-IKST-101-01.mp3","announcement":null},"2":{"melody":"JRE-IKST-101-02.mp3","announcement":null}},"新青森":{"11":{"melody":"ねぶた囃子 進行.mp3","announcement":"新青森 はやぶさ40号.mp3","delay":7,"duck":25},"12":{"melody":"ねぶた囃子 進行.mp3","announcement":null},"13":{"melody":"ねぶた囃子 戻り.mp3","announcement":"新青森 はやぶさ27号.mp3","delay":7,"duck":25},"14":{"melody":"ねぶた囃子 戻り.mp3","announcement":null}}},"上越新幹線":{"東京":{"20":{"melody":"JRE-IKST-101-01.mp3","announcement":null},"21":{"melody":"JRE-IKST-xxx-xx（東京21番）.mp3","announcement":null},"22":{"melody":"JRE-IKST-102-01.mp3","announcement":null},"23":{"melody":"JRE-IKST-105-01.mp3","announcement":null}},"上野":{"19":{"melody":"JRE-IKST-102-01.mp3","announcement":null},"20":{"melody":"JRE-IKST-101-01.mp3","announcement":null},"21":{"melody":"JRE-IKST-101-02.mp3","announcement":null},"22":{"melody":"JRE-IKST-102-02.mp3","announcement":null}},"大宮":{"13":{"melody":"JRE-IKST-105-02.mp3","announcement":null},"14":{"melody":"JRE-IKST-105-02.mp3","announcement":null},"15":{"melody":"JRE-IKST-xxx-xx（大宮15,16番線）.mp3","announcement":null},"16":{"melody":"JRE-IKST-xxx-xx（大宮15,16番線）.mp3","announcement":null},"18":{"melody":"JRE-IKST-101-xx.mp3","announcement":null}},"熊谷":{"11":{"melody":"JRE-IKST-102-02.mp3","announcement":null},"12":{"melody":"JRE-IKST-102-02.mp3","announcement":null},"13":{"melody":"JRE-IKST-102-01.mp3","announcement":null}},"本庄早稲田":{"1":{"melody":"JRE-IKST-102-01.mp3","announcement":null},"2":{"melody":"JRE-IKST-102-02.mp3","announcement":null}},"高崎":{"11":{"melody":"さらば青春の光.mp3","announcement":null},"12":{"melody":"さらば青春の光.mp3","announcement":null},"13":{"melody":"Great Messenger.mp3","announcement":null},"14":{"melody":"Great Messenger.mp3","announcement":null}},"上毛高原":{"1":{"melody":"JRE-IKST-102-02.mp3","announcement":null},"2":{"melody":"JRE-IKST-102-01.mp3","announcement":null}},"越後湯沢":{"11":{"melody":"JRE-IKST-102-03.mp3","announcement":null},"12":{"melody":"JRE-IKST-102-01.mp3","announcement":null},"13":{"melody":"JRE-IKST-102-02.mp3","announcement":null},"14":{"melody":"JRE-IKST-102-04.mp3","announcement":null}},"浦佐":{"11":{"melody":"JRE-IKST-102-02.mp3","announcement":null},"12":{"melody":"JRE-IKST-102-01.mp3","announcement":null}},"長岡":{"11":{"melody":"JRE-IKST-102-01.mp3","announcement":null},"12":{"melody":"JRE-IKST-102-02.mp3","announcement":null}},"燕三条":{"11":{"melody":"JRE-IKST-102-01.mp3","announcement":null},"12":{"melody":"JRE-IKST-102-02.mp3","announcement":null},"13":{"melody":"JRE-IKST-102-02.mp3","announcement":null}},"新潟":{"11":{"melody":"JRE-IKST-102-01.mp3","announcement":null},"12":{"melody":"JRE-IKST-102-xx（新潟12番線）.mp3","announcement":null},"13":{"melody":"JRE-IKST-102-02.mp3","announcement":null},"14":{"melody":"JRE-IKST-102-xx（新潟14番線）.mp3","announcement":null}}},"北陸新幹線":{"東京":{"20":{"melody":"JRE-IKST-101-01.mp3","announcement":null},"21":{"melody":"JRE-IKST-xxx-xx（東京21番）.mp3","announcement":null},"22":{"melody":"JRE-IKST-102-01.mp3","announcement":null},"23":{"melody":"JRE-IKST-105-01.mp3","announcement":null}},"上野":{"19":{"melody":"JRE-IKST-102-01.mp3","announcement":null},"20":{"melody":"JRE-IKST-101-01.mp3","announcement":null},"21":{"melody":"JRE-IKST-101-02.mp3","announcement":null},"22":{"melody":"JRE-IKST-102-02.mp3","announcement":null}},"大宮":{"13":{"melody":"JRE-IKST-105-02.mp3","announcement":null},"14":{"melody":"JRE-IKST-105-02.mp3","announcement":null},"15":{"melody":"JRE-IKST-xxx-xx（大宮15,16番線）.mp3","announcement":null},"16":{"melody":"JRE-IKST-xxx-xx（大宮15,16番線）.mp3","announcement":null},"18":{"melody":"JRE-IKST-101-xx.mp3","announcement":null}},"熊谷":{"11":{"melody":"JRE-IKST-102-02.mp3","announcement":null},"12":{"melody":"JRE-IKST-102-02.mp3","announcement":null},"13":{"melody":"JRE-IKST-102-01.mp3","announcement":null}},"本庄早稲田":{"1":{"melody":"JRE-IKST-102-01.mp3","announcement":"本庄早稲田 あさま613号.mp3","delay":6,"duck":30},"2":{"melody":"JRE-IKST-102-02.mp3","announcement":null}},"高崎":{"11":{"melody":"さらば青春の光.mp3","announcement":null},"12":{"melody":"さらば青春の光.mp3","announcement":null},"13":{"melody":"Great Messenger.mp3","announcement":null},"14":{"melody":"Great Messenger.mp3","announcement":null}},"安中榛名":{"1":{"melody":"JRE-IKST-105-01.mp3","announcement":null},"2":{"melody":"JRE-IKST-105-02.mp3","announcement":null}},"軽井沢":{"1":{"melody":null,"announcement":null,"disabled":true},"2":{"melody":null,"announcement":null,"disabled":true},"3":{"melody":null,"announcement":null,"disabled":true},"4":{"melody":null,"announcement":null,"disabled":true}},"佐久平":{"1":{"melody":"JRE-IKST-105-02.mp3","announcement":null},"2":{"melody":"JRE-IKST-105-01.mp3","announcement":"佐久平 あさま613号.mp3","delay":5,"duck":30}},"上田":{"1":{"melody":"JRE-IKST-105-02.mp3","announcement":null},"2":{"melody":"JRE-IKST-105-01.mp3","announcement":null}},"長野":{"11":{"melody":"信濃の国.mp3","announcement":null},"12":{"melody":"信濃の国.mp3","announcement":null},"13":{"melody":"信濃の国.mp3","announcement":null},"14":{"melody":"信濃の国.mp3","announcement":null}},"飯山":{"11":{"melody":"ふるさとverA.mp3","announcement":null},"12":{"melody":"ふるさとverB.mp3","announcement":null}},"上越妙高":{"11":{"melody":"夏は来ぬverB.mp3","announcement":null},"12":{"melody":"夏は来ぬverB.mp3","announcement":null},"13":{"melody":"夏は来ぬverA.mp3","announcement":null},"14":{"melody":"夏は来ぬverA.mp3","announcement":null}}}};
-let selectionMode=localStorage.getItem('bell-selection-mode-v29')==='station'?'station':'free';
-let selectedStation=JSON.parse(localStorage.getItem('bell-selected-station-v29')||'null');
-let currentStationConfig=null,stationSwitchGeneration=0,stationLevel=0,stationLine='',stationName='';
-const stationOverlay=$('stationOverlay'),stationList=$('stationOverlayList');
-function stationAsset(name){return 'audio/'+encodeURIComponent(name)}
-function clearStationSource(key){
-  if(key==='bell'){stopBellBuffer();endBell();++bellLoadVersion;bellBuffer=null}
-  if(key==='announce'){clearScheduledAnnouncement();++announceLoadVersion;announceBuffer=null;fallbackAnnouncementActive=false}
-  sounds[key].pause();sounds[key].removeAttribute('src');sounds[key].load();
-  if(urls[key]){URL.revokeObjectURL(urls[key]);delete urls[key]}
-}
-async function loadStationSource(key,name,generation){
-  if(!name){clearStationSource(key);return}
-  // The direct URL works without requiring user file upload. Decode for gapless playback.
-  const url=stationAsset(name);
-  sounds[key].pause();sounds[key].src=url;sounds[key].load();
-  if(key==='bell'){stopBellBuffer();endBell();bellBuffer=null;++bellLoadVersion}
-  else {clearScheduledAnnouncement();fallbackAnnouncementActive=false;announceBuffer=null;++announceLoadVersion}
-  try{
-    const response=await fetch(url);
-    if(!response.ok)throw Error('HTTP '+response.status);
-    const blob=await response.blob();
-    if(generation!==stationSwitchGeneration||selectionMode!=='station')return;
-    if(key==='bell')await prepareBellBuffer(blob);else await prepareAnnouncement(blob);
-  }catch(e){console.warn('駅別音声のデコードに失敗。通常再生で続行します',name,e)}
-}
-async function restoreFreeAudio(){
-  const generation=++stationSwitchGeneration;
-  currentStationConfig=null;
-  for(const key of ['bell','announce']){
-    try{
-      const file=await readFile(key);
-      if(generation!==stationSwitchGeneration||selectionMode!=='free')return;
-      if(file)setSource(key,file.blob,file.name);
-      else clearStationSource(key);
-    }catch(e){console.warn('自由選択音声の復元に失敗',e)}
-  }
-  adjustVolume();
-}
-function selectedStationValid(){
-  if(!selectedStation||!STATION_DB[selectedStation.line])return false;
-  const station=STATION_DB[selectedStation.line][selectedStation.station];
-  const conf=station&&station[selectedStation.platform];
-  return !!(conf&&conf.melody&&!conf.disabled);
-}
-function renderSelectionMode(){
-  $('selectionMode').value=selectionMode;
-  for(const el of document.querySelectorAll('[data-free-only]'))el.classList.toggle('station-hidden',selectionMode==='station');
-  $('stationSetting').classList.toggle('station-hidden',selectionMode!=='station');
-  const valid=selectedStationValid();
-  $('stationSelection').textContent=valid?`${selectedStation.line} / ${selectedStation.station}駅 / ${selectedStation.platform}番線`:'駅・番線を選択してください。';
-  $('stationAnnouncementStatus').textContent=valid?(STATION_DB[selectedStation.line][selectedStation.station][selectedStation.platform].announcement?'発車放送あり':'発車放送準備中（メロディのみ再生）'):'';
-}
-function applyStation(){
-  const generation=++stationSwitchGeneration;
-  if(selectionMode!=='station')return;
-  clearScheduledAnnouncement();sounds.announce.pause();
-  if(!selectedStationValid()){
-    currentStationConfig=null;clearStationSource('bell');clearStationSource('announce');renderSelectionMode();return;
-  }
-  const cfg=STATION_DB[selectedStation.line][selectedStation.station][selectedStation.platform];
-  currentStationConfig=cfg;
-  loadStationSource('bell',cfg.melody,generation);
-  loadStationSource('announce',cfg.announcement,generation);
-  adjustVolume();renderSelectionMode();
-}
-function selectStationPlatform(line,station,platform){
-  selectedStation={line,station,platform};
-  localStorage.setItem('bell-selected-station-v29',JSON.stringify(selectedStation));
-  stationOverlay.classList.remove('open');applyStation();
-}
-function stationChoice(text,callback,disabled=false,selected=false){
-  const b=document.createElement('button');b.type='button';b.className='station-item'+(selected?' selected':'');b.textContent=text;b.disabled=disabled;
-  b.addEventListener('click',callback);stationList.appendChild(b);
-}
-function renderStationPicker(){
-  stationList.replaceChildren();$('stationOverlayBack').style.display=stationLevel===0?'none':'';
-  if(stationLevel===0){
-    $('stationOverlayTitle').textContent='① 路線を選択';$('stationOverlayHelp').textContent='新幹線を選んでください。';
-    for(const line of Object.keys(STATION_DB))stationChoice(line,()=>{stationLine=line;stationLevel=1;renderStationPicker()});
-  }else if(stationLevel===1){
-    $('stationOverlayTitle').textContent='② 駅を選択';$('stationOverlayHelp').textContent=stationLine+' / 準備中の駅は選択できません。';
-    for(const [name,plats] of Object.entries(STATION_DB[stationLine])){
-      const disabled=Object.values(plats).every(c=>c.disabled||!c.melody);
-      stationChoice(name+'駅'+(disabled?'　【準備中】':''),()=>{stationName=name;stationLevel=2;renderStationPicker()},disabled);
-    }
-  }else{
-    $('stationOverlayTitle').textContent='③ 番線を選択';$('stationOverlayHelp').textContent=stationLine+' / '+stationName+'駅';
-    for(const [plat,cfg] of Object.entries(STATION_DB[stationLine][stationName])){
-      const disabled=cfg.disabled||!cfg.melody;
-      stationChoice(plat+'番線'+(disabled?'　【準備中】':cfg.announcement?'　【発車放送あり】':'　【発車放送準備中】'),()=>selectStationPlatform(stationLine,stationName,plat),disabled,selectedStation?.line===stationLine&&selectedStation?.station===stationName&&selectedStation?.platform===plat);
-    }
-  }
-}
-$('selectionMode').addEventListener('change',()=>{
-  selectionMode=$('selectionMode').value;
-  localStorage.setItem('bell-selection-mode-v29',selectionMode);
-  clearScheduledAnnouncement();sounds.announce.pause();stopBellBuffer();sounds.bell.pause();endBell();
-  if(selectionMode==='station')applyStation();else restoreFreeAudio();
-  renderSelectionMode();
-});
-$('openStation').addEventListener('click',()=>{stationLevel=0;stationOverlay.classList.add('open');renderStationPicker()});
-$('stationOverlayClose').addEventListener('click',()=>stationOverlay.classList.remove('open'));
-$('stationOverlayBack').addEventListener('click',()=>{stationLevel=Math.max(0,stationLevel-1);renderStationPicker()});
-renderSelectionMode();
-if(selectionMode==='station')applyStation();
-
+(async()=>{for(const key of ['bell','announce','door']){try{const f=await readFile(key);if(f)setSource(key,f.blob,f.name)}catch(e){}}})();
+function getMode(){return $('mode').value}function getDuck(){let v=Number($('duck').value);return Number.isFinite(v)?Math.min(100,Math.max(0,v))/100:0.3}
+function getDelay(){const v=Number($('announceDelay').value);return Number.isFinite(v)?Math.min(3600,Math.max(0,v)):0}
 // Web Audio の時刻で減音を予約する。iPhoneのJSタイマー遅延に依存しない。
 function cancelDuckAutomation(){
   if(!bellGain||!audioContext)return;
@@ -561,7 +437,7 @@ $('bellButton').addEventListener('click',()=>{
     endBell();
     return;
   }
-  if(!sounds.bell.src){alert(selectionMode==='station'?'先に駅・番線を選択してください。':'先に設定から発車メロディを登録してください。');return}
+  if(!sounds.bell.src){alert('先に設定から発車メロディを登録してください。');return}
   starting=true;bellPlaying=true;stopPending=false;activeMode=getMode();
   $('bellLamp').classList.add('lit');
   const ctx=unlockAudioForGesture();
@@ -608,8 +484,8 @@ $('bellButton').addEventListener('click',()=>{
   });
 });
 sounds.bell.addEventListener('ended',endBell);sounds.announce.addEventListener('play',()=>{fallbackAnnouncementActive=true;adjustVolume()});sounds.announce.addEventListener('pause',()=>{fallbackAnnouncementActive=false;adjustVolume()});sounds.announce.addEventListener('ended',()=>{fallbackAnnouncementActive=false;adjustVolume()});sounds.announce.addEventListener('error',()=>{fallbackAnnouncementActive=false;adjustVolume()});
-$('announceDelay').addEventListener('change',()=>{const v=getDelay();$('announceDelay').value=String(v);localStorage.setItem('bell-announce-delay-v7',String(v))});$('duck').addEventListener('input',()=>{const v=Number($('duck').value);if(Number.isFinite(v)&&v>=0&&v<=100){localStorage.setItem('bell-duck-v3',String(v));if(announceSource)scheduleDuckForWeb(announceSource);adjustVolume()}});
-const savedDelay=localStorage.getItem('bell-announce-delay-v7');if(savedDelay!==null&&Number.isFinite(Number(savedDelay))&&Number(savedDelay)>=0&&Number(savedDelay)<=3600)$('announceDelay').value=savedDelay;const savedDuck=localStorage.getItem('bell-duck-v3');if(savedDuck!==null&&Number(savedDuck)>=0&&Number(savedDuck)<=100)$('duck').value=savedDuck;
+$('announceDelay').addEventListener('change',()=>{const v=getDelay();$('announceDelay').value=String(v);localStorage.setItem('bell-announce-delay-v7',String(v))});$('duck').addEventListener('input',()=>{const v=Number($('duck').value);if(Number.isFinite(v)&&v>=0&&v<=100){localStorage.setItem('bell-duck-v3',String(v));if(announceSource)scheduleDuckForWeb(announceSource);adjustVolume()}});$('mode').addEventListener('change',()=>{localStorage.setItem('bell-mode-v3',getMode());/* 再生中のモードは次回の開始から反映 */});
+const savedDelay=localStorage.getItem('bell-announce-delay-v7');if(savedDelay!==null&&Number.isFinite(Number(savedDelay))&&Number(savedDelay)>=0&&Number(savedDelay)<=3600)$('announceDelay').value=savedDelay;const savedMode=localStorage.getItem('bell-mode-v3');if(['normal','tachikawa'].includes(savedMode))$('mode').value=savedMode;const savedDuck=localStorage.getItem('bell-duck-v3');if(savedDuck!==null&&Number(savedDuck)>=0&&Number(savedDuck)<=100)$('duck').value=savedDuck;
 const door=$('doorButton');function stopDoor(){doorHeld=false;stopDoorBuffer();sounds.door.pause();if(sounds.door.src)try{sounds.door.currentTime=0}catch(e){}$('doorLamp').classList.remove('lit')}
 door.addEventListener('pointerdown',e=>{
   e.preventDefault();
@@ -775,5 +651,4 @@ renderMic();
 $('gear').onclick=()=>{ $('settings').classList.add('open'); if(micEnabled&&!micStream&&!micBusy){unlockAudioForGesture();startLiveMic(micRequest)} };$('close').onclick=()=>$('settings').classList.remove('open');
 })();
 </script></body></html>
-
 
